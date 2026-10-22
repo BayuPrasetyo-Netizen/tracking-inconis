@@ -11,7 +11,6 @@
     <script>
         tailwind.config = { darkMode: 'class' }
 
-        // KUNCI ANTI-FREEZE: Paksa hilangkan layar loading maksimal 1.5 detik
         window.addEventListener('load', () => {
             setTimeout(() => {
                 document.getElementById('loadingOverlay').classList.add('hidden-loader');
@@ -30,7 +29,6 @@
         ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
         ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
 
-        /* LOADING OVERLAY */
         #loadingOverlay {
             position: fixed; inset: 0; z-index: 9999; background-color: #f8fafc;
             display: flex; flex-direction: column; align-items: center; justify-content: center;
@@ -46,7 +44,6 @@
         .dot:nth-child(2) { animation-delay: -0.16s; }
         @keyframes bounce { 0%, 80%, 100% { transform: scale(0); } 40% { transform: scale(1); } }
 
-        /* TEMA */
         .dark body { background-color: #0f172a; color: #e2e8f0; }
         .dark .bg-watermark { background-image: none; }
         .dark .bg-white { background-color: #1e293b !important; border-color: #334155 !important; }
@@ -56,44 +53,38 @@
         .dark .border-slate-200, .dark .border-slate-100 { border-color: #334155 !important; }
         .dark #loadingOverlay { background-color: #0f172a; }
         .dark #loadingOverlay h2 { color: #f8fafc; }
-        
-        .neon body { background-color: #050505; color: #00ffcc; font-family: 'Courier New', Courier, monospace; }
-        .neon .bg-watermark { background-image: none; }
-        .neon .bg-white { background-color: #111 !important; border: 1px solid #00ffcc !important; box-shadow: 0 0 10px rgba(0, 255, 204, 0.2); }
-        .neon .bg-slate-50, .neon .bg-slate-100 { background-color: #000 !important; border-color: #00ffcc !important; }
-        .neon .text-slate-800, .neon .text-slate-700, .neon .text-slate-600 { color: #00ffcc !important; text-shadow: 0 0 5px rgba(0, 255, 204, 0.5); }
-        .neon .text-slate-500, .neon .text-slate-400 { color: #0088ff !important; }
-        .neon .text-indigo-600 { color: #ff00ff !important; text-shadow: 0 0 5px #ff00ff; }
-        .neon .border-slate-200, .neon .border-slate-100 { border-color: #00ffcc !important; }
-        .neon #loadingOverlay { background-color: #050505; }
-        .neon #loadingOverlay h2 { color: #00ffcc; text-shadow: 0 0 10px #00ffcc; }
-        .neon .bg-slate-900 { background-color: #000 !important; border-bottom: 1px solid #00ffcc; }
-        .neon tr:hover { background-color: rgba(0, 255, 204, 0.1) !important; }
     </style>
 </head>
 <body class="bg-slate-50 bg-watermark text-slate-800 min-h-screen flex flex-col relative">
 
-    <!-- LOADING OVERLAY -->
     <div id="loadingOverlay">
-        <img src="https://inconis.com/web/image/12573-c55c95e6/Inconis.png" 
-             alt="Logo Inconis" 
-             class="w-48 h-auto object-contain floating-logo mb-8 rounded-xl drop-shadow-2xl">
-        
+        <img src="https://inconis.com/web/image/12573-c55c95e6/Inconis.png" alt="Logo Inconis" class="w-48 h-auto object-contain floating-logo mb-8 rounded-xl drop-shadow-2xl">
         <div class="flex space-x-2 mb-4">
             <div class="w-3 h-3 bg-emerald-400 rounded-full dot"></div>
             <div class="w-3 h-3 bg-amber-400 rounded-full dot"></div>
             <div class="w-3 h-3 bg-blue-500 rounded-full dot"></div>
         </div>
-        
-        <h2 class="text-xl font-bold text-slate-800 mb-1" id="loadingText">Mengambil Data Purchase...</h2>
-        <p class="text-xs text-slate-400 font-bold tracking-widest uppercase">Loading Dashboard</p>
+        <h2 class="text-xl font-bold text-slate-800 mb-1" id="loadingText">Mengambil Data...</h2>
+    </div>
+
+    <div id="loginModal" class="fixed inset-0 bg-slate-900/80 backdrop-blur-sm z-[100] hidden flex items-center justify-center p-4">
+        <div class="bg-white p-8 rounded-2xl shadow-2xl max-w-sm w-full text-center">
+            <i class="fa-solid fa-lock text-4xl text-indigo-600 mb-4"></i>
+            <h2 class="text-2xl font-bold mb-2">Admin Login</h2>
+            <p class="text-sm text-slate-500 mb-6">Masukkan PIN untuk akses menu input</p>
+            <input type="password" id="pinInput" placeholder="Masukkan PIN" class="w-full text-center tracking-widest text-lg p-3 border border-slate-300 rounded-xl mb-4 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+            <div class="flex gap-2">
+                <button onclick="document.getElementById('loginModal').classList.add('hidden')" class="flex-1 bg-slate-200 text-slate-700 py-3 rounded-xl font-bold hover:bg-slate-300 transition">Batal</button>
+                <button onclick="login()" class="flex-1 bg-indigo-600 text-white py-3 rounded-xl font-bold hover:bg-indigo-700 transition">Masuk</button>
+            </div>
+        </div>
     </div>
 
     <header class="bg-slate-900 text-white shadow-lg sticky top-0 z-40 border-b border-slate-800 dark:bg-slate-900">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+        <div class="w-full px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
             <div class="flex items-center space-x-4">
-                <div class="w-14 h-14 rounded-xl bg-white p-2 flex items-center justify-center shadow-md overflow-hidden shrink-0">
-                    <img src="https://inconis.com/web/image/12573-c55c95e6/Inconis.png" alt="Logo Inconis" class="w-full h-full object-contain">
+                <div onclick="handleLogoClick()" class="w-14 h-14 rounded-xl bg-white p-2 flex items-center justify-center shadow-md overflow-hidden shrink-0 cursor-pointer select-none active:scale-95 transition">
+                    <img src="https://inconis.com/web/image/12573-c55c95e6/Inconis.png" alt="Logo Inconis" class="w-full h-full object-contain pointer-events-none">
                 </div>
                 <div>
                     <h1 class="font-bold text-lg sm:text-xl leading-tight tracking-tight text-white">Dashboard Tracking PR & PO</h1>
@@ -102,23 +93,26 @@
             </div>
             
             <div class="flex items-center space-x-4">
-                <div class="hidden sm:flex items-center bg-slate-800 rounded-lg p-1 border border-slate-700">
-                    <button onclick="setTheme('light')" id="btnLight" class="px-3 py-1.5 rounded-md text-xs font-bold text-white bg-indigo-600 transition">Light</button>
-                    <button onclick="setTheme('dark')" id="btnDark" class="px-3 py-1.5 rounded-md text-xs font-bold text-slate-400 hover:text-white transition">Dark</button>
-                    <button onclick="setTheme('neon')" id="btnNeon" class="px-3 py-1.5 rounded-md text-xs font-bold text-slate-400 hover:text-white transition">Neon</button>
-                </div>
-
-                <button onclick="fetchSheetData()" id="syncBtn" class="flex items-center justify-center w-10 h-10 sm:w-auto sm:h-auto sm:px-4 sm:py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl text-sm font-medium transition shadow-sm active:scale-95">
+                <button onclick="fetchSheetData()" class="hidden sm:flex items-center space-x-2 bg-indigo-600 hover:bg-indigo-500 text-white px-4 py-2 rounded-xl text-sm font-medium transition shadow-sm active:scale-95">
                     <i class="fa-solid fa-rotate" id="syncIcon"></i>
-                    <span class="hidden sm:inline ml-2">Sinkronisasi</span>
+                    <span class="hidden sm:inline">Sinkronisasi</span>
+                </button>
+                <button onclick="logout()" id="logoutBtn" class="hidden bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-xl text-sm font-medium transition">
+                    <i class="fa-solid fa-right-from-bracket"></i>
                 </button>
             </div>
         </div>
     </header>
 
-    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex-grow w-full space-y-6 relative z-10">
+    <main class="w-full px-4 sm:px-6 lg:px-8 py-8 flex-grow space-y-6 relative z-10">
+        <div id="adminMenu" class="hidden bg-indigo-50 p-6 rounded-2xl border border-indigo-200 shadow-sm">
+            <h3 class="font-bold text-lg text-indigo-800 mb-4"><i class="fa-solid fa-shield-halved mr-2"></i>Menu Admin</h3>
+            <button onclick="openInputModal()" class="bg-indigo-600 text-white px-6 py-3 rounded-xl font-bold hover:bg-indigo-700 transition shadow-md flex items-center space-x-2">
+                <i class="fa-solid fa-box-open"></i>
+                <span>Input Barang Datang (Ceklis)</span>
+            </button>
+        </div>
 
-        <!-- Summary Cards -->
         <div class="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-5 gap-3 sm:gap-4">
             <div onclick="filterByStatus('ALL')" class="bg-white p-4 sm:p-5 rounded-2xl shadow-sm border border-slate-200/60 cursor-pointer hover:-translate-y-1 hover:shadow-md transition-all duration-200 group">
                 <div class="flex flex-col sm:flex-row sm:items-center justify-between">
@@ -131,8 +125,7 @@
                     </div>
                 </div>
             </div>
-
-            <div onclick="filterByStatus('RECEIVED')" class="bg-white p-4 sm:p-5 rounded-2xl shadow-sm border border-slate-200/60 cursor-pointer hover:-translate-y-1 hover:shadow-md transition-all duration-200 group">
+             <div onclick="filterByStatus('RECEIVED')" class="bg-white p-4 sm:p-5 rounded-2xl shadow-sm border border-slate-200/60 cursor-pointer hover:-translate-y-1 hover:shadow-md transition-all duration-200 group">
                 <div class="flex flex-col sm:flex-row sm:items-center justify-between">
                     <div>
                         <p class="text-[10px] sm:text-[11px] font-bold text-slate-400 uppercase tracking-wider">Received & Billing</p>
@@ -143,8 +136,7 @@
                     </div>
                 </div>
             </div>
-
-            <div onclick="filterByStatus('PROGRESS')" class="bg-white p-4 sm:p-5 rounded-2xl shadow-sm border border-slate-200/60 cursor-pointer hover:-translate-y-1 hover:shadow-md transition-all duration-200 group">
+             <div onclick="filterByStatus('PROGRESS')" class="bg-white p-4 sm:p-5 rounded-2xl shadow-sm border border-slate-200/60 cursor-pointer hover:-translate-y-1 hover:shadow-md transition-all duration-200 group">
                 <div class="flex flex-col sm:flex-row sm:items-center justify-between">
                     <div>
                         <p class="text-[10px] sm:text-[11px] font-bold text-slate-400 uppercase tracking-wider">Progress Kirim</p>
@@ -155,8 +147,7 @@
                     </div>
                 </div>
             </div>
-
-            <div onclick="filterByStatus('PENDING')" class="bg-white p-4 sm:p-5 rounded-2xl shadow-sm border border-slate-200/60 cursor-pointer hover:-translate-y-1 hover:shadow-md transition-all duration-200 group">
+             <div onclick="filterByStatus('PENDING')" class="bg-white p-4 sm:p-5 rounded-2xl shadow-sm border border-slate-200/60 cursor-pointer hover:-translate-y-1 hover:shadow-md transition-all duration-200 group">
                 <div class="flex flex-col sm:flex-row sm:items-center justify-between">
                     <div>
                         <p class="text-[10px] sm:text-[11px] font-bold text-slate-400 uppercase tracking-wider">Pending / Belum</p>
@@ -167,8 +158,7 @@
                     </div>
                 </div>
             </div>
-
-            <div onclick="openVendorModal()" class="col-span-2 sm:col-span-1 bg-white p-4 sm:p-5 rounded-2xl shadow-sm border border-slate-200/60 cursor-pointer hover:-translate-y-1 hover:shadow-md transition-all duration-200 group">
+             <div onclick="openVendorModal()" class="col-span-2 sm:col-span-1 bg-white p-4 sm:p-5 rounded-2xl shadow-sm border border-slate-200/60 cursor-pointer hover:-translate-y-1 hover:shadow-md transition-all duration-200 group">
                 <div class="flex flex-col sm:flex-row sm:items-center justify-between">
                     <div>
                         <p class="text-[10px] sm:text-[11px] font-bold text-slate-400 uppercase tracking-wider">Total Vendor</p>
@@ -181,13 +171,12 @@
             </div>
         </div>
 
-        <!-- Filter & Search -->
         <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-200/60 flex flex-col sm:flex-row items-center justify-between gap-4">
-            <div class="relative w-full sm:w-[400px]">
+            <div class="relative w-full sm:w-[500px]">
                 <span class="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none text-slate-400">
                     <i class="fa-solid fa-magnifying-glass"></i>
                 </span>
-                <input type="text" id="searchInput" oninput="handleSearch()" placeholder="Cari No PR, PO, Vendor, atau User..." class="w-full pl-11 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white transition placeholder:text-slate-400">
+                <input type="text" id="searchInput" oninput="handleSearch()" placeholder="Cari No PR, PO, Vendor, User, atau Item..." class="w-full pl-11 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white transition placeholder:text-slate-400">
             </div>
 
             <div class="flex items-center space-x-3 w-full sm:w-auto justify-between sm:justify-end">
@@ -201,42 +190,32 @@
             </div>
         </div>
 
-        <!-- Main Table & Mobile Cards -->
         <div class="bg-white rounded-2xl shadow-sm border border-slate-200/60 overflow-hidden flex flex-col">
             <div class="p-4 sm:p-6 border-b border-slate-100 flex items-center justify-between bg-white">
-                <div class="flex items-center space-x-3">
-                    <div class="w-10 h-10 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center text-lg">
-                        <i class="fa-solid fa-table"></i>
-                    </div>
-                    <h2 class="font-bold text-slate-800 text-base sm:text-lg">Rekapitulasi PR & PO</h2>
-                </div>
+                <h2 class="font-bold text-slate-800 text-base sm:text-lg">Rekapitulasi PR & PO</h2>
                 <span id="tableCount" class="text-[10px] sm:text-xs font-bold bg-indigo-50 text-indigo-700 px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg border border-indigo-100">Memuat data...</span>
             </div>
 
-            <!-- TAMPILAN DESKTOP (Tabel) -->
-            <div class="hidden sm:block overflow-x-auto overflow-y-auto max-h-[65vh]">
+            <div class="hidden sm:block overflow-x-auto overflow-y-auto max-h-[70vh]">
                 <table class="w-full text-left border-collapse">
                     <thead class="bg-slate-50 border-b border-slate-200 sticky top-0 z-10">
                         <tr class="text-slate-500 text-[11px] uppercase tracking-wider">
-                            <th class="py-4 px-5 font-bold text-center w-16">No</th>
-                            <th class="py-4 px-5 font-bold">No PR</th>
-                            <th class="py-4 px-5 font-bold">No PO</th>
-                            <th class="py-4 px-5 font-bold min-w-[200px]">Vendor</th>
-                            <th class="py-4 px-5 font-bold min-w-[180px]">User</th>
-                            <th class="py-4 px-5 font-bold text-center">Item</th>
-                            <th class="py-4 px-5 font-bold text-center">Tgl Kirim / Datang</th>
-                            <th class="py-4 px-5 font-bold">Status</th>
-                            <th class="py-4 px-5 font-bold text-center w-24">Aksi</th>
+                            <th class="py-4 px-4 font-bold text-center w-12 whitespace-nowrap">No</th>
+                            <th class="py-4 px-4 font-bold whitespace-nowrap">No PR</th>
+                            <th class="py-4 px-4 font-bold whitespace-nowrap">No PO</th>
+                            <th class="py-4 px-4 font-bold min-w-[200px]">Vendor</th>
+                            <th class="py-4 px-4 font-bold min-w-[150px]">User</th>
+                            <th class="py-4 px-4 font-bold text-center whitespace-nowrap">Item</th>
+                            <th class="py-4 px-4 font-bold text-center min-w-[150px]">Tgl Kirim / Datang</th>
+                            <th class="py-4 px-4 font-bold whitespace-nowrap">Status</th>
+                            <th class="py-4 px-4 font-bold text-center whitespace-nowrap w-20">Aksi</th>
                         </tr>
                     </thead>
                     <tbody id="tableBody" class="divide-y divide-slate-100 text-sm bg-white"></tbody>
                 </table>
             </div>
 
-            <!-- TAMPILAN HP (Kartu) -->
-            <div id="mobileCardBody" class="block sm:hidden divide-y divide-slate-100 bg-white">
-                <!-- Data kartu diisi via JS -->
-            </div>
+            <div id="mobileCardBody" class="block sm:hidden divide-y divide-slate-100 bg-white"></div>
 
             <div class="p-4 sm:p-5 border-t border-slate-100 bg-slate-50/50 flex flex-col sm:flex-row items-center justify-between gap-4">
                 <div class="flex items-center space-x-2 w-full sm:w-auto justify-between sm:justify-start">
@@ -261,7 +240,46 @@
         </div>
     </main>
 
-    <!-- Modal Detail Item per PO -->
+    <div id="inputModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-4xl w-full max-h-[90vh] flex flex-col overflow-hidden">
+            <div class="p-5 border-b border-slate-100 flex items-center justify-between bg-white">
+                <h3 class="font-bold text-lg text-slate-800"><i class="fa-solid fa-box-open text-indigo-600 mr-2"></i>Input Barang Datang</h3>
+                <button onclick="closeInputModal()" class="w-10 h-10 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-600 flex items-center justify-center transition"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            
+            <div class="p-6 overflow-y-auto flex-grow bg-slate-50">
+                <div class="flex gap-2 mb-6">
+                    <input type="text" id="searchPOModal" placeholder="Ketik No PO..." class="w-full p-3 border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500 text-sm">
+                    <button onclick="searchPO()" class="bg-indigo-600 text-white px-6 rounded-xl font-bold hover:bg-indigo-700 transition">Cari</button>
+                </div>
+
+                <div id="poItemsContainer" class="hidden bg-white border border-slate-200 rounded-xl overflow-hidden shadow-sm mb-4">
+                    <table class="w-full text-left text-sm">
+                        <thead class="bg-slate-100 border-b border-slate-200">
+                            <tr>
+                                <th class="py-3 px-4 text-center w-12"><input type="checkbox" id="checkAll" onchange="toggleAll(this)"></th>
+                                <th class="py-3 px-4 font-bold">Nama Item</th>
+                                <th class="py-3 px-4 font-bold">Qty</th>
+                            </tr>
+                        </thead>
+                        <tbody id="poItemsBody" class="divide-y divide-slate-100"></tbody>
+                    </table>
+                </div>
+
+                <div id="receiveInputContainer" class="hidden bg-white p-5 rounded-xl border border-slate-200 shadow-sm space-y-4">
+                    <div>
+                        <label class="block text-sm font-bold text-slate-700 mb-2">Tanggal Datang</label>
+                        <input type="date" id="inputTglDatang" class="w-full p-3 border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500 text-sm">
+                    </div>
+                    
+                    <button onclick="simpanBarangDatang()" id="btnSimpan" class="w-full bg-emerald-600 text-white py-3 rounded-xl font-bold hover:bg-emerald-700 transition shadow-md mt-4">
+                        <i class="fa-solid fa-save mr-2"></i>Simpan ke Sheet Barang Datang
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <div id="detailModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
         <div class="bg-white rounded-2xl shadow-2xl max-w-5xl w-full max-h-[85vh] flex flex-col overflow-hidden">
             <div class="p-4 sm:p-6 border-b border-slate-100 flex items-center justify-between bg-white">
@@ -269,7 +287,7 @@
                     <h3 class="font-bold text-base sm:text-lg text-slate-800" id="modalTitle">Detail PR & PO</h3>
                     <p class="text-[11px] sm:text-xs text-slate-500 mt-1" id="modalSubtitle">Daftar item barang terdaftar</p>
                 </div>
-                <button onclick="closeModal()" class="w-10 h-10 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-600 flex items-center justify-center transition">
+                <button onclick="closeDetailModal()" class="w-10 h-10 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-600 flex items-center justify-center transition">
                     <i class="fa-solid fa-xmark"></i>
                 </button>
             </div>
@@ -293,14 +311,13 @@
             </div>
 
             <div class="p-4 sm:p-5 border-t border-slate-100 bg-white flex justify-end">
-                <button onclick="closeModal()" class="px-6 py-2.5 bg-slate-800 hover:bg-slate-700 text-white rounded-xl text-sm font-semibold transition shadow-sm">
+                <button onclick="closeDetailModal()" class="px-6 py-2.5 bg-slate-800 hover:bg-slate-700 text-white rounded-xl text-sm font-semibold transition shadow-sm">
                     Tutup
                 </button>
             </div>
         </div>
     </div>
 
-    <!-- Modal Daftar Vendor -->
     <div id="vendorModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
         <div class="bg-white rounded-2xl shadow-2xl max-w-xl w-full max-h-[85vh] flex flex-col overflow-hidden">
             <div class="p-4 sm:p-6 border-b border-slate-100 flex items-center justify-between bg-white">
@@ -330,47 +347,21 @@
     </footer>
 
     <script>
-        // API SCRIPT
         const API_URL = "https://script.google.com/macros/s/AKfycbwEDWMcYTVePKpa3JkGusA1nKOnomTlLL0-I2FgtxhUwHkDwyZZzGZCMZoSdibveZNPmA/exec";
-
+        
         let rawData = [];      
         let groupedData = {};  
-        let currentFilterStatus = 'ALL';
         let allVendors = new Set();
+        let currentFilterStatus = 'ALL';
+        let selectedPOItems = []; 
         let currentPage = 1;
         let rowsPerPage = 100;
-
-        function setTheme(theme) {
-            const html = document.documentElement;
-            html.className = theme; 
-            localStorage.setItem('dashboard-theme', theme); 
-            ['btnLight', 'btnDark', 'btnNeon'].forEach(id => {
-                const btn = document.getElementById(id);
-                if(!btn) return;
-                if (id.toLowerCase().includes(theme)) {
-                    btn.className = "px-3 py-1.5 rounded-md text-xs font-bold text-white bg-indigo-600 transition";
-                } else {
-                    btn.className = "px-3 py-1.5 rounded-md text-xs font-bold text-slate-400 hover:text-white transition";
-                }
-            });
-        }
-
-        window.addEventListener('DOMContentLoaded', () => {
-            const savedTheme = localStorage.getItem('dashboard-theme') || 'light';
-            setTheme(savedTheme);
-        });
-
-        function escapeHTML(str) {
-            if (!str) return "-";
-            return String(str).replace(/[&<>'"]/g, 
-                tag => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[tag] || tag)
-            );
-        }
 
         function formatTanggal(tgl) {
             if (!tgl || tgl === "-" || String(tgl).trim() === "") return "-";
             let str = String(tgl).trim();
-            if (str.includes('GMT') || str.includes('Waktu Indonesia')) {
+            
+            if (str.includes('GMT') || str.includes('Waktu Indonesia') || str.match(/^[A-Za-z]{3}\s[A-Za-z]{3}/)) {
                 let d = new Date(str);
                 if (!isNaN(d.getTime())) return d.toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' });
             }
@@ -380,43 +371,150 @@
             }
             return str;
         }
-
-        function showLoader() {
-            document.getElementById('loadingOverlay').classList.remove('hidden-loader');
+        
+        let clickCount = 0;
+        let clickTimeout;
+        function handleLogoClick() {
+            clickCount++;
+            clearTimeout(clickTimeout);
+            if (clickCount === 3) {
+                document.getElementById('loginModal').classList.remove('hidden');
+                document.getElementById('pinInput').value = ''; 
+                clickCount = 0;
+            } else {
+                clickTimeout = setTimeout(() => { clickCount = 0; }, 1000);
+            }
         }
-        function hideLoader() {
-            document.getElementById('loadingOverlay').classList.add('hidden-loader');
+
+        function login() {
+            const pin = document.getElementById('pinInput').value;
+            if (pin === '12345') {
+                document.getElementById('loginModal').classList.add('hidden');
+                document.getElementById('adminMenu').classList.remove('hidden');
+                document.getElementById('logoutBtn').classList.remove('hidden');
+                document.getElementById('logoutBtn').classList.add('flex');
+            } else {
+                alert('PIN Salah!');
+            }
+        }
+
+        function logout() {
+            document.getElementById('adminMenu').classList.add('hidden');
+            document.getElementById('logoutBtn').classList.add('hidden');
+            document.getElementById('logoutBtn').classList.remove('flex');
+            alert('Berhasil Logout');
+        }
+
+        function openInputModal() {
+            document.getElementById('inputModal').classList.remove('hidden');
+            document.getElementById('poItemsContainer').classList.add('hidden');
+            document.getElementById('receiveInputContainer').classList.add('hidden');
+            document.getElementById('searchPOModal').value = '';
+            document.getElementById('poItemsBody').innerHTML = '';
+            
+            let today = new Date().toISOString().split('T')[0];
+            document.getElementById('inputTglDatang').value = today;
+        }
+
+        function closeInputModal() {
+            document.getElementById('inputModal').classList.add('hidden');
+        }
+
+        function searchPO() {
+            const query = document.getElementById('searchPOModal').value.toUpperCase();
+            if (!query) return alert("Ketik No PO dulu!");
+
+            selectedPOItems = rawData.filter(row => row.noPO.toUpperCase() === query);
+            
+            if (selectedPOItems.length === 0) {
+                alert("PO tidak ditemukan di data!");
+                document.getElementById('poItemsContainer').classList.add('hidden');
+                document.getElementById('receiveInputContainer').classList.add('hidden');
+                return;
+            }
+
+            const tbody = document.getElementById('poItemsBody');
+            tbody.innerHTML = '';
+            selectedPOItems.forEach((item, index) => {
+                let tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td class="py-3 px-4 text-center"><input type="checkbox" class="item-checkbox" data-index="${index}" checked></td>
+                    <td class="py-3 px-4 font-semibold text-slate-700">${item.item}</td>
+                    <td class="py-3 px-4">${item.qty} ${item.ukuran}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+
+            document.getElementById('poItemsContainer').classList.remove('hidden');
+            document.getElementById('receiveInputContainer').classList.remove('hidden');
+        }
+
+        function toggleAll(source) {
+            const checkboxes = document.querySelectorAll('.item-checkbox');
+            checkboxes.forEach(cb => cb.checked = source.checked);
+        }
+
+        function simpanBarangDatang() {
+            const tglDatang = document.getElementById('inputTglDatang').value;
+            if (!tglDatang) return alert("Pilih Tanggal Datang!");
+
+            const checkboxes = document.querySelectorAll('.item-checkbox:checked');
+            if (checkboxes.length === 0) return alert("Pilih minimal 1 item!");
+
+            const btn = document.getElementById('btnSimpan');
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-2"></i>Menyimpan...';
+            btn.disabled = true;
+
+            let itemsToSave = [];
+
+            checkboxes.forEach(cb => {
+                const index = cb.getAttribute('data-index');
+                const item = selectedPOItems[index];
+                
+                itemsToSave.push({
+                    noPR: item.noPR,
+                    noPO: item.noPO,
+                    user: item.user,
+                    vendor: item.vendor,
+                    item: item.item,
+                    ukuran: item.ukuran,
+                    qty: item.qty,
+                    tglDatang: tglDatang,
+                    tglKirim: item.tglKirim || "-", 
+                    noDO: item.noDO || "-",
+                    noReceive: "-"
+                });
+            });
+
+            fetch(API_URL, {
+                method: 'POST',
+                body: JSON.stringify(itemsToSave)
+            }).then(res => {
+                alert("Berhasil disimpan ke Sheet Barang Datang!");
+                closeInputModal();
+                fetchSheetData(); 
+                btn.innerHTML = '<i class="fa-solid fa-save mr-2"></i>Simpan ke Sheet Barang Datang';
+                btn.disabled = false;
+            }).catch(err => {
+                console.error(err);
+                alert("Gagal menyimpan data.");
+                btn.innerHTML = '<i class="fa-solid fa-save mr-2"></i>Simpan ke Sheet Barang Datang';
+                btn.disabled = false;
+            });
         }
 
         async function fetchSheetData() {
-            const syncIcon = document.getElementById('syncIcon');
-            syncIcon.classList.add('fa-spin');
-            showLoader(); 
+            document.getElementById('syncIcon')?.classList.add('fa-spin');
             
-            let failsafeTimer = setTimeout(() => {
-                hideLoader();
-                syncIcon.classList.remove('fa-spin');
-                document.getElementById('tableCount').innerText = "Data belum tersedia";
-            }, 5000);
-
             try {
                 const response = await fetch(API_URL);
-                clearTimeout(failsafeTimer);
-                
-                if (!response.ok) throw new Error("Gagal mengambil data.");
                 rawData = await response.json();
-                
-                setTimeout(() => {
-                    try { processAndRenderData(); } catch (err) { console.error(err); } finally { hideLoader(); syncIcon.classList.remove('fa-spin'); }
-                }, 800);
-
+                processAndRenderData();
             } catch (error) {
-                clearTimeout(failsafeTimer);
-                hideLoader(); 
-                syncIcon.classList.remove('fa-spin');
-                console.warn("Gagal:", error);
-                processAndRenderData(); 
-                document.getElementById('tableCount').innerText = "Data belum tersedia";
+                console.error(error);
+            } finally {
+                document.getElementById('syncIcon')?.classList.remove('fa-spin');
+                document.getElementById('loadingOverlay').classList.add('hidden-loader');
             }
         }
 
@@ -424,64 +522,85 @@
             groupedData = {};
             allVendors.clear();
 
+            // LOGIKA BARU: Status Group dihitung berdasarkan item yang udah dateng
             rawData.forEach(row => {
-                let noPR = escapeHTML(row.noPR || "-");
-                let noPO = escapeHTML(row.noPO || "-");
-                let vendor = escapeHTML(row.vendor || "-");
-                let user = escapeHTML(row.user || "-");
-                let item = escapeHTML(row.item || "-");
-                let ukuran = escapeHTML(row.ukuran || "-");
-                let qty = escapeHTML(row.qty || "-");
-                let noDO = escapeHTML(row.noDO || "-");
-                let noReceive = escapeHTML(row.noReceive || "");
+                let noPO = row.noPO || "-";
+                let vendor = row.vendor || "-";
                 
-                let tglDatang = formatTanggal(row.tglDatang);
-                let tglKirim = formatTanggal(row.tglKirim);
+                if (vendor !== "-" && vendor !== "") allVendors.add(vendor);
 
-                if (noPR === "-" && noPO === "-") return;
-                if (vendor !== "-") allVendors.add(vendor);
-
-                let lowerReceive = noReceive.toLowerCase();
-                
-                let isReceived = noReceive !== "" && noReceive !== "-" && 
-                                 !lowerReceive.includes("progress") && !lowerReceive.includes("pending") && 
-                                 !lowerReceive.includes("belum") && !lowerReceive.includes("proses");
-
-                if (lowerReceive.includes("close billing")) isReceived = true;
-                let isProgress = lowerReceive.includes("progress") || lowerReceive.includes("kirim");
-                let groupKey = noPO !== "-" ? noPO : noPR;
-
-                if (!groupedData[groupKey]) {
-                    groupedData[groupKey] = {
-                        noPR, noPO, vendors: new Set(), users: new Set(), items: [],
-                        hasReceived: false, hasProgress: false, tglTampil: [] 
+                if (!groupedData[noPO]) {
+                    groupedData[noPO] = { 
+                        items: [], 
+                        hasReceived: false, 
+                        hasProgress: false, 
+                        allItemsCount: 0,
+                        receivedItemsCount: 0,
+                        pendingItemsCount: 0,
+                        vendor: vendor, 
+                        noPR: row.noPR,
+                        tglTampil: []
                     };
                 }
+                
+                groupedData[noPO].items.push(row);
+                groupedData[noPO].allItemsCount++;
 
-                if (vendor !== "-") groupedData[groupKey].vendors.add(vendor);
-                if (user !== "-") groupedData[groupKey].users.add(user);
+                // Ngecek per item apakah tanggal datangnya ada isinya
+                let tglDatangStr = String(row.tglDatang || "").trim();
+                let isReceivedItem = tglDatangStr !== "" && 
+                                     tglDatangStr !== "-" && 
+                                     !tglDatangStr.toUpperCase().includes("KIRIM VENDOR");
+
+                if (isReceivedItem) {
+                    groupedData[noPO].receivedItemsCount++;
+                } else {
+                    groupedData[noPO].pendingItemsCount++;
+                }
 
                 let stringTanggal = "";
-                if (tglDatang !== "-") stringTanggal += `<span class="opacity-70">Datang:</span> ${tglDatang}`;
-                if (tglKirim !== "-") {
-                    if (stringTanggal !== "") stringTanggal += `<br>`;
-                    stringTanggal += `<span class="opacity-70">Kirim:</span> ${tglKirim}`;
-                }
-                if (stringTanggal !== "") groupedData[groupKey].tglTampil.push(stringTanggal);
-                
-                groupedData[groupKey].items.push({ item, ukuran, qty, noDO, noReceive, isReceived, isProgress, tglDatang, tglKirim });
+                let fDatang = formatTanggal(row.tglDatang);
+                let fKirim = formatTanggal(row.tglKirim);
 
-                if (isReceived) groupedData[groupKey].hasReceived = true;
-                if (isProgress) groupedData[groupKey].hasProgress = true;
+                if (fDatang !== "-") stringTanggal += `<span class="opacity-70">Datang:</span> ${fDatang}`;
+                if (fKirim !== "-") {
+                    if (stringTanggal !== "") stringTanggal += `<br>`;
+                    stringTanggal += `<span class="opacity-70">Kirim:</span> ${fKirim}`;
+                }
+                if (stringTanggal !== "") groupedData[noPO].tglTampil.push(stringTanggal);
             });
 
-            document.getElementById('statTotal').innerText = Object.keys(groupedData).length;
-            document.getElementById('statReceived').innerText = Object.values(groupedData).filter(g => g.hasReceived).length;
-            document.getElementById('statProgress').innerText = Object.values(groupedData).filter(g => g.hasProgress && !g.hasReceived).length;
-            document.getElementById('statPending').innerText = Object.values(groupedData).filter(g => !g.hasReceived && !g.hasProgress).length;
+            // Tentukan Status Group berdasarkan perbandingan item
+            let totalPO = Object.keys(groupedData).length;
+            let totalReceived = 0;
+            let totalProgress = 0;
+            let totalPending = 0;
+
+            Object.values(groupedData).forEach(g => {
+                // Kalau SEMUA item udah datang
+                if (g.receivedItemsCount === g.allItemsCount) {
+                    g.statusGroup = 'RECEIVED';
+                    totalReceived++;
+                } 
+                // Kalau SEBAGIAN item udah datang (Progress)
+                else if (g.receivedItemsCount > 0) {
+                    g.statusGroup = 'PROGRESS';
+                    totalProgress++;
+                } 
+                // Kalau BELUM ADA sama sekali
+                else {
+                    g.statusGroup = 'PENDING';
+                    totalPending++;
+                }
+            });
+
+            document.getElementById('statTotal').innerText = totalPO;
+            document.getElementById('statReceived').innerText = totalReceived;
+            document.getElementById('statProgress').innerText = totalProgress;
+            document.getElementById('statPending').innerText = totalPending;
             document.getElementById('statVendor').innerText = allVendors.size;
 
-            currentPage = 1; 
+            currentPage = 1;
             renderTable();
         }
 
@@ -500,18 +619,23 @@
             let filteredKeys = keys.filter(key => {
                 let group = groupedData[key];
                 let matchStatus = true;
-                if (statusFilterVal === 'RECEIVED') matchStatus = group.hasReceived;
-                if (statusFilterVal === 'PROGRESS') matchStatus = group.hasProgress && !group.hasReceived;
-                if (statusFilterVal === 'PENDING') matchStatus = !group.hasReceived && !group.hasProgress;
+                
+                // Filter Status
+                if (statusFilterVal === 'RECEIVED') matchStatus = group.statusGroup === 'RECEIVED';
+                if (statusFilterVal === 'PROGRESS') matchStatus = group.statusGroup === 'PROGRESS';
+                if (statusFilterVal === 'PENDING') matchStatus = group.statusGroup === 'PENDING';
 
-                if (currentFilterStatus === 'RECEIVED') matchStatus = group.hasReceived;
-                if (currentFilterStatus === 'PROGRESS') matchStatus = group.hasProgress && !group.hasReceived;
-                if (currentFilterStatus === 'PENDING') matchStatus = !group.hasReceived && !group.hasProgress;
+                if (currentFilterStatus === 'RECEIVED') matchStatus = group.statusGroup === 'RECEIVED';
+                if (currentFilterStatus === 'PROGRESS') matchStatus = group.statusGroup === 'PROGRESS';
+                if (currentFilterStatus === 'PENDING') matchStatus = group.statusGroup === 'PENDING';
 
-                let matchSearch = group.noPR.toLowerCase().includes(searchQuery) || group.noPO.toLowerCase().includes(searchQuery) ||
-                    Array.from(group.vendors).some(v => v.toLowerCase().includes(searchQuery)) ||
-                    Array.from(group.users).some(u => u.toLowerCase().includes(searchQuery)) ||
-                    group.items.some(i => i.item.toLowerCase().includes(searchQuery));
+                let matchSearch = group.noPR.toLowerCase().includes(searchQuery) || 
+                                  key.toLowerCase().includes(searchQuery) ||
+                                  (group.vendor||"").toLowerCase().includes(searchQuery) ||
+                                  Array.from(group.items).some(i => 
+                                      (i.item||"").toLowerCase().includes(searchQuery) || 
+                                      (i.user||"").toLowerCase().includes(searchQuery)
+                                  );
 
                 return matchStatus && matchSearch;
             });
@@ -537,56 +661,54 @@
 
             paginatedKeys.forEach((key, index) => {
                 let group = groupedData[key];
-                let vendorsStr = Array.from(group.vendors).join(", ") || "-";
-                let usersStr = Array.from(group.users).join(", ") || "-";
                 let itemCount = group.items.length;
                 let rowNumber = startIndex + index + 1; 
+                
+                let displayUser = group.items[0]?.user || "-";
 
                 let displayDate = "-";
                 if (group.tglTampil.length > 0) {
                     let uniqueDates = [...new Set(group.tglTampil)];
-                    displayDate = uniqueDates.length > 1 ? `<div class="block">${uniqueDates[0]}</div><div class="text-[10px] opacity-60 italic mt-1">(bbrp tgl)</div>` : `<div class="block">${uniqueDates[0]}</div>`;
+                    displayDate = uniqueDates.length > 1 ? `<div class="block whitespace-nowrap">${uniqueDates[0]}</div><div class="text-[10px] opacity-60 italic mt-1">(bbrp tgl)</div>` : `<div class="block whitespace-nowrap">${uniqueDates[0]}</div>`;
                 }
 
                 let badgeHTML = "";
-                if (group.hasReceived) {
-                    badgeHTML = `<span class="inline-flex items-center px-2.5 py-1 rounded-full text-[11px] font-semibold bg-emerald-100 text-emerald-700"><span class="w-1.5 h-1.5 rounded-full bg-emerald-500 mr-1.5"></span> Received</span>`;
-                } else if (group.hasProgress) {
-                    badgeHTML = `<span class="inline-flex items-center px-2.5 py-1 rounded-full text-[11px] font-semibold bg-blue-100 text-blue-700"><span class="w-1.5 h-1.5 rounded-full bg-blue-500 mr-1.5"></span> Progress</span>`;
+                if (group.statusGroup === 'RECEIVED') {
+                    badgeHTML = `<span class="inline-flex items-center px-2.5 py-1 rounded-full text-[11px] font-semibold bg-emerald-100 text-emerald-700 whitespace-nowrap"><span class="w-1.5 h-1.5 rounded-full bg-emerald-500 mr-1.5"></span> Received</span>`;
+                } else if (group.statusGroup === 'PROGRESS') {
+                    badgeHTML = `<span class="inline-flex items-center px-2.5 py-1 rounded-full text-[11px] font-semibold bg-blue-100 text-blue-700 whitespace-nowrap"><span class="w-1.5 h-1.5 rounded-full bg-blue-500 mr-1.5"></span> Partial (${group.receivedItemsCount}/${group.allItemsCount})</span>`;
                 } else {
-                    badgeHTML = `<span class="inline-flex items-center px-2.5 py-1 rounded-full text-[11px] font-semibold bg-amber-100 text-amber-700"><span class="w-1.5 h-1.5 rounded-full bg-amber-500 mr-1.5"></span> Pending</span>`;
+                    badgeHTML = `<span class="inline-flex items-center px-2.5 py-1 rounded-full text-[11px] font-semibold bg-amber-100 text-amber-700 whitespace-nowrap"><span class="w-1.5 h-1.5 rounded-full bg-amber-500 mr-1.5"></span> Pending</span>`;
                 }
 
-                // RENDER TABEL (DESKTOP)
                 let tr = document.createElement('tr');
                 tr.className = "hover:bg-slate-50 transition-colors border-b border-slate-100 last:border-0";
                 tr.innerHTML = `
-                    <td class="py-4 px-5 font-medium text-slate-400 text-center text-xs">${rowNumber}</td>
-                    <td onclick="openModal('${key.replace(/'/g, "\\'")}')" class="py-4 px-5 font-semibold text-indigo-600 hover:text-indigo-800 cursor-pointer transition-colors" title="Klik untuk lihat detail">${group.noPR}</td>
-                    <td onclick="openModal('${key.replace(/'/g, "\\'")}')" class="py-4 px-5 font-semibold text-indigo-600 hover:text-indigo-800 cursor-pointer transition-colors" title="Klik untuk lihat detail">${group.noPO}</td>
-                    <td class="py-4 px-5 text-slate-700 font-medium">${vendorsStr}</td>
-                    <td class="py-4 px-5 text-slate-600 text-xs">${usersStr}</td>
-                    <td class="py-4 px-5 text-center">
-                        <span class="bg-slate-100 text-slate-600 px-2.5 py-1 rounded-md text-xs font-bold">${itemCount}</span>
+                    <td class="py-4 px-4 font-medium text-slate-400 text-center text-xs">${rowNumber}</td>
+                    <td onclick="openDetailModal('${key.replace(/'/g, "\\'")}')" class="py-4 px-4 font-semibold text-indigo-600 hover:text-indigo-800 cursor-pointer transition-colors whitespace-nowrap">${group.noPR}</td>
+                    <td onclick="openDetailModal('${key.replace(/'/g, "\\'")}')" class="py-4 px-4 font-semibold text-indigo-600 hover:text-indigo-800 cursor-pointer transition-colors whitespace-nowrap">${key}</td>
+                    <td class="py-4 px-4 text-slate-700 font-medium min-w-[150px]">${group.vendor}</td>
+                    <td class="py-4 px-4 text-slate-600 text-xs min-w-[120px]">${displayUser}</td>
+                    <td class="py-4 px-4 text-center">
+                        <span class="bg-slate-100 text-slate-600 px-2.5 py-1 rounded-md text-xs font-bold whitespace-nowrap">${itemCount}</span>
                     </td>
-                    <td class="py-4 px-5 text-slate-600 text-xs font-medium leading-relaxed">${displayDate}</td>
-                    <td class="py-4 px-5">${badgeHTML}</td>
-                    <td class="py-4 px-5 text-center">
-                        <button onclick="openModal('${key.replace(/'/g, "\\'")}')" class="w-8 h-8 rounded-full text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 transition-colors flex items-center justify-center mx-auto" title="Lihat Detail">
+                    <td class="py-4 px-4 text-slate-600 text-xs font-medium leading-relaxed">${displayDate}</td>
+                    <td class="py-4 px-4">${badgeHTML}</td>
+                    <td class="py-4 px-4 text-center">
+                        <button onclick="openDetailModal('${key.replace(/'/g, "\\'")}')" class="w-8 h-8 rounded-full text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 transition-colors flex items-center justify-center mx-auto">
                             <i class="fa-solid fa-eye text-sm"></i>
                         </button>
                     </td>
                 `;
                 tbody.appendChild(tr);
 
-                // RENDER KARTU (MOBILE)
                 let card = document.createElement('div');
                 card.className = "p-4 flex flex-col space-y-3";
                 card.innerHTML = `
                     <div class="flex justify-between items-start">
                         <div>
                             <p class="text-xs text-slate-400 font-bold mb-1">No PO</p>
-                            <p onclick="openModal('${key.replace(/'/g, "\\'")}')" class="text-sm font-bold text-indigo-600">${group.noPO}</p>
+                            <p onclick="openDetailModal('${key.replace(/'/g, "\\'")}')" class="text-sm font-bold text-indigo-600">${key}</p>
                         </div>
                         <div class="text-right">
                             <p class="text-xs text-slate-400 font-bold mb-1">Status</p>
@@ -600,11 +722,11 @@
                     <div class="grid grid-cols-2 gap-2">
                         <div>
                             <p class="text-xs text-slate-400 font-bold mb-1">Vendor</p>
-                            <p class="text-sm text-slate-600 truncate">${vendorsStr}</p>
+                            <p class="text-sm text-slate-600 truncate">${group.vendor}</p>
                         </div>
                         <div>
                             <p class="text-xs text-slate-400 font-bold mb-1">User</p>
-                            <p class="text-sm text-slate-600 truncate">${usersStr}</p>
+                            <p class="text-sm text-slate-600 truncate">${displayUser}</p>
                         </div>
                     </div>
                     <div class="flex justify-between items-end mt-2 pt-3 border-t border-slate-100">
@@ -612,7 +734,7 @@
                             <p class="text-xs text-slate-400 font-bold mb-1">Tgl Kirim / Datang</p>
                             <p class="text-xs font-medium text-slate-600 leading-relaxed">${displayDate}</p>
                         </div>
-                        <button onclick="openModal('${key.replace(/'/g, "\\'")}')" class="px-3 py-1.5 bg-indigo-50 text-indigo-600 rounded-lg text-xs font-bold hover:bg-indigo-100 transition">
+                        <button onclick="openDetailModal('${key.replace(/'/g, "\\'")}')" class="px-3 py-1.5 bg-indigo-50 text-indigo-600 rounded-lg text-xs font-bold hover:bg-indigo-100 transition">
                             Lihat ${itemCount} Item
                         </button>
                     </div>
@@ -704,38 +826,39 @@
             document.getElementById('vendorModal').classList.add('hidden');
         }
 
-        function openModal(key) {
+        function openDetailModal(key) {
             let group = groupedData[key];
             if (!group) return;
 
             document.getElementById('modalTitle').innerText = `Detail PR: ${group.noPR}`;
-            document.getElementById('modalSubtitle').innerText = `PO: ${group.noPO} | Total ${group.items.length} item terdaftar.`;
+            document.getElementById('modalSubtitle').innerText = `PO: ${key} | Total ${group.items.length} item terdaftar.`;
 
             let modalBody = document.getElementById('modalTableBody');
             modalBody.innerHTML = "";
 
             group.items.forEach(item => {
                 let statusBadge = "";
-                // LOGIKA BARU: Deteksi otomatis apakah teksnya mirip No Receive (HO/IN/...)
-                let isNoReceive = /^[A-Za-z]+\/[A-Za-z]+\/\d+/.test(item.noReceive) || item.noReceive.includes('/');
+                let status = (item.noReceive || "").toLowerCase();
                 
-                if (isNoReceive) {
-                    // Jika formatnya seperti No Receive (ada garis miring), tampilkan
-                    statusBadge = `<span class="px-2 py-1 rounded text-[11px] font-bold bg-emerald-100 text-emerald-700">${item.noReceive}</span>`;
-                } else if (item.isReceived) {
-                    // Jika tidak ada nomor tapi statusnya received
-                    statusBadge = `<span class="px-2 py-1 rounded text-[11px] font-bold bg-emerald-100 text-emerald-700">Received</span>`;
-                } else if (item.isProgress) {
-                    statusBadge = `<span class="px-2 py-1 rounded text-[11px] font-bold bg-blue-100 text-blue-700">Progress Kirim</span>`;
+                let tglDatangStr = String(item.tglDatang || "").trim();
+                let isReceivedItem = tglDatangStr !== "" && 
+                                     tglDatangStr !== "-" && 
+                                     !tglDatangStr.toUpperCase().includes("KIRIM VENDOR");
+
+                if (isReceivedItem) {
+                    statusBadge = `<span class="px-2 py-1 rounded text-[11px] font-bold bg-emerald-100 text-emerald-700 whitespace-nowrap">${item.noReceive}</span>`;
                 } else {
-                    statusBadge = `<span class="px-2 py-1 rounded text-[11px] font-bold bg-amber-100 text-amber-700">Belum Datang</span>`;
+                    statusBadge = `<span class="px-2 py-1 rounded text-[11px] font-bold bg-amber-100 text-amber-700 whitespace-nowrap">Belum Datang</span>`;
                 }
 
+                let fDatang = formatTanggal(item.tglDatang);
+                let fKirim = formatTanggal(item.tglKirim);
                 let itemDate = "";
-                if (item.tglDatang !== "-") itemDate += `<span class="opacity-70">Datang:</span> ${item.tglDatang}`;
-                if (item.tglKirim !== "-") {
+                
+                if (fDatang !== "-") itemDate += `<span class="opacity-70">Datang:</span> ${fDatang}`;
+                if (fKirim !== "-") {
                     if(itemDate !== "") itemDate += `<br>`;
-                    itemDate += `<span class="opacity-70">Kirim:</span> ${item.tglKirim}`;
+                    itemDate += `<span class="opacity-70">Kirim:</span> ${fKirim}`;
                 }
                 itemDate = itemDate || "-";
 
@@ -747,7 +870,7 @@
                     <td class="py-4 px-5 text-center font-bold text-slate-700">${item.qty}</td>
                     <td class="py-4 px-5 text-slate-600">${item.noDO}</td>
                     <td class="py-4 px-5">${statusBadge}</td>
-                    <td class="py-4 px-5 text-slate-600 text-xs font-medium leading-relaxed">${itemDate}</td>
+                    <td class="py-4 px-5 text-slate-600 text-xs font-medium leading-relaxed whitespace-nowrap">${itemDate}</td>
                 `;
                 modalBody.appendChild(tr);
             });
@@ -755,14 +878,14 @@
             document.getElementById('detailModal').classList.remove('hidden');
         }
 
-        function closeModal() {
+        function closeDetailModal() {
             document.getElementById('detailModal').classList.add('hidden');
         }
 
         window.onclick = function(event) {
             let detailModal = document.getElementById('detailModal');
             let vendorModal = document.getElementById('vendorModal');
-            if (event.target === detailModal) closeModal();
+            if (event.target === detailModal) closeDetailModal();
             if (event.target === vendorModal) closeVendorModal();
         }
 
