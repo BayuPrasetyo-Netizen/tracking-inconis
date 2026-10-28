@@ -113,7 +113,8 @@
             </button>
         </div>
 
-        <div class="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-5 gap-3 sm:gap-4">
+        <!-- STATISTIK CARDS -->
+        <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 sm:gap-4">
             <div onclick="filterByStatus('ALL')" class="bg-white p-4 sm:p-5 rounded-2xl shadow-sm border border-slate-200/60 cursor-pointer hover:-translate-y-1 hover:shadow-md transition-all duration-200 group">
                 <div class="flex flex-col sm:flex-row sm:items-center justify-between">
                     <div>
@@ -128,7 +129,7 @@
              <div onclick="filterByStatus('RECEIVED')" class="bg-white p-4 sm:p-5 rounded-2xl shadow-sm border border-slate-200/60 cursor-pointer hover:-translate-y-1 hover:shadow-md transition-all duration-200 group">
                 <div class="flex flex-col sm:flex-row sm:items-center justify-between">
                     <div>
-                        <p class="text-[10px] sm:text-[11px] font-bold text-slate-400 uppercase tracking-wider">Received & Billing</p>
+                        <p class="text-[10px] sm:text-[11px] font-bold text-slate-400 uppercase tracking-wider">Received</p>
                         <h3 class="text-2xl sm:text-3xl font-extrabold text-emerald-600 mt-1" id="statReceived">0</h3>
                     </div>
                     <div class="hidden sm:flex w-12 h-12 rounded-2xl bg-emerald-50 text-emerald-600 items-center justify-center text-xl group-hover:bg-emerald-600 group-hover:text-white transition-colors duration-200">
@@ -158,7 +159,25 @@
                     </div>
                 </div>
             </div>
-             <div onclick="openVendorModal()" class="col-span-2 sm:col-span-1 bg-white p-4 sm:p-5 rounded-2xl shadow-sm border border-slate-200/60 cursor-pointer hover:-translate-y-1 hover:shadow-md transition-all duration-200 group">
+            
+            <!-- KARTU BILLING (BISA DIKLIK) -->
+            <div onclick="openBillingModal()" class="bg-white p-4 sm:p-5 rounded-2xl shadow-sm border border-slate-200/60 cursor-pointer hover:-translate-y-1 hover:shadow-md transition-all duration-200 group">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between">
+                    <div>
+                        <p class="text-[10px] sm:text-[11px] font-bold text-slate-400 uppercase tracking-wider">Status Billing</p>
+                        <div class="flex items-baseline space-x-1 mt-1">
+                            <h3 class="text-2xl sm:text-3xl font-extrabold text-teal-600" id="statBillingPaid">0</h3>
+                            <span class="text-xs text-slate-500 font-medium">/ <span id="statBillingTotal">0</span></span>
+                        </div>
+                        <p class="text-[9px] text-teal-500 font-semibold mt-0.5">Klik untuk filter</p>
+                    </div>
+                    <div class="hidden sm:flex w-12 h-12 rounded-2xl bg-teal-50 text-teal-600 items-center justify-center text-xl group-hover:bg-teal-600 group-hover:text-white transition-colors duration-200">
+                        <i class="fa-solid fa-file-invoice-dollar"></i>
+                    </div>
+                </div>
+            </div>
+
+             <div onclick="openVendorModal()" class="bg-white p-4 sm:p-5 rounded-2xl shadow-sm border border-slate-200/60 cursor-pointer hover:-translate-y-1 hover:shadow-md transition-all duration-200 group">
                 <div class="flex flex-col sm:flex-row sm:items-center justify-between">
                     <div>
                         <p class="text-[10px] sm:text-[11px] font-bold text-slate-400 uppercase tracking-wider">Total Vendor</p>
@@ -186,6 +205,8 @@
                     <option value="RECEIVED">Sudah Received</option>
                     <option value="PROGRESS">Progress Kirim</option>
                     <option value="PENDING">Belum Datang</option>
+                    <option value="BILLING_PAID">Sudah Lunas (Billing)</option>
+                    <option value="BILLING_UNPAID">Belum Lunas (Billing)</option>
                 </select>
             </div>
         </div>
@@ -208,7 +229,7 @@
                             <th class="py-4 px-4 font-bold text-center whitespace-nowrap">Item</th>
                             <th class="py-4 px-4 font-bold text-center min-w-[150px]">Tgl Kirim / Datang</th>
                             <th class="py-4 px-4 font-bold whitespace-nowrap">Status</th>
-                            <th class="py-4 px-4 font-bold text-center whitespace-nowrap w-20">Aksi</th>
+                            <th class="py-4 px-4 font-bold text-center whitespace-nowrap">Aksi</th>
                         </tr>
                     </thead>
                     <tbody id="tableBody" class="divide-y divide-slate-100 text-sm bg-white"></tbody>
@@ -240,6 +261,28 @@
         </div>
     </main>
 
+    <!-- MODAL PILIHAN BILLING -->
+    <div id="billingModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-sm w-full flex flex-col overflow-hidden">
+            <div class="p-5 border-b border-slate-100 flex items-center justify-between bg-white">
+                <h3 class="font-bold text-lg text-slate-800">Filter Status Billing</h3>
+                <button onclick="closeBillingModal()" class="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-600 flex items-center justify-center transition"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="p-5 bg-slate-50 flex flex-col gap-3">
+                <button onclick="filterByStatus('BILLING_PAID')" class="w-full bg-teal-50 border border-teal-200 text-teal-700 py-3 rounded-xl font-bold hover:bg-teal-100 transition flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-check-circle"></i> Sudah Lunas / Close
+                </button>
+                <button onclick="filterByStatus('BILLING_UNPAID')" class="w-full bg-rose-50 border border-rose-200 text-rose-700 py-3 rounded-xl font-bold hover:bg-rose-100 transition flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-clock"></i> Belum Lunas
+                </button>
+                <button onclick="filterByStatus('ALL')" class="w-full bg-white border border-slate-300 text-slate-700 py-3 rounded-xl font-bold hover:bg-slate-50 transition flex items-center justify-center gap-2 mt-2">
+                    Semua Data
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL INPUT BARANG -->
     <div id="inputModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
         <div class="bg-white rounded-2xl shadow-2xl max-w-4xl w-full max-h-[90vh] flex flex-col overflow-hidden">
             <div class="p-5 border-b border-slate-100 flex items-center justify-between bg-white">
@@ -280,6 +323,7 @@
         </div>
     </div>
 
+    <!-- MODAL DETAIL PR/PO -->
     <div id="detailModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
         <div class="bg-white rounded-2xl shadow-2xl max-w-5xl w-full max-h-[85vh] flex flex-col overflow-hidden">
             <div class="p-4 sm:p-6 border-b border-slate-100 flex items-center justify-between bg-white">
@@ -293,6 +337,11 @@
             </div>
             
             <div class="p-4 sm:p-6 overflow-y-auto flex-grow bg-slate-50/50">
+                <!-- Banner Status Billing -->
+                <div id="modalBillingBanner" class="hidden mb-4 rounded-xl p-4 border flex items-center gap-3">
+                    <!-- Diisi via JS -->
+                </div>
+
                 <div class="overflow-x-auto border border-slate-200 rounded-xl bg-white shadow-sm">
                     <table class="w-full text-left text-sm min-w-[600px]">
                         <thead class="bg-slate-50 text-slate-500 text-[11px] uppercase border-b border-slate-200">
@@ -318,6 +367,7 @@
         </div>
     </div>
 
+    <!-- MODAL VENDOR -->
     <div id="vendorModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
         <div class="bg-white rounded-2xl shadow-2xl max-w-xl w-full max-h-[85vh] flex flex-col overflow-hidden">
             <div class="p-4 sm:p-6 border-b border-slate-100 flex items-center justify-between bg-white">
@@ -356,6 +406,49 @@
         let selectedPOItems = []; 
         let currentPage = 1;
         let rowsPerPage = 100;
+
+        // ==========================================
+        // FUNGSI MEMBACA STATUS (DARI PROPERTI "noReceive")
+        // ==========================================
+        function getStatusData(row) {
+            let val = row.noReceive; 
+            if (!val || String(val).trim() === "" || String(val).trim() === "-") return null;
+            return String(val).trim();
+        }
+
+        // ==========================================
+        // FUNGSI KLASIFIKASI WARNA STATUS (DIPERBARUI)
+        // ==========================================
+        function classifyStatus(statusText) {
+            if (!statusText) return 'PENDING';
+            
+            const s = statusText.toUpperCase();
+            
+            // Aturan 1: CLOSE RECEIVED / CLOSED masuk RECEIVED (Hijau)
+            if (s.includes("CLOSE RECEIVED") || s.includes("CLOSED")) {
+                return 'RECEIVED';
+            }
+            
+            // Aturan 2: PENGIRIMAN LOKASI masuk PROGRESS KIRIM (Biru)
+            if (s.includes("PENGIRIMAN LOKASI")) {
+                return 'PROGRESS';
+            }
+            
+            // Aturan 3: PO KIRIM VENDOR & DATANG DARI VENDOR masuk PENDING (Kuning)
+            return 'PENDING';
+        }
+
+        function getBillingStatus(row) {
+            let val = row.billing;
+            if (!val || String(val).trim() === "" || String(val).trim() === "-") return null;
+            return String(val).trim();
+        }
+
+        function isBillingPaid(billingText) {
+            if (!billingText) return false;
+            const regex = /bayar|lunas|paid|done|ok|selesai|close/i;
+            return regex.test(billingText);
+        }
 
         function formatTanggal(tgl) {
             if (!tgl || tgl === "-" || String(tgl).trim() === "") return "-";
@@ -424,7 +517,7 @@
             const query = document.getElementById('searchPOModal').value.toUpperCase();
             if (!query) return alert("Ketik No PO dulu!");
 
-            selectedPOItems = rawData.filter(row => row.noPO.toUpperCase() === query);
+            selectedPOItems = rawData.filter(row => String(row.noPO).toUpperCase() === query);
             
             if (selectedPOItems.length === 0) {
                 alert("PO tidak ditemukan di data!");
@@ -522,7 +615,6 @@
             groupedData = {};
             allVendors.clear();
 
-            // LOGIKA BARU: Status Group dihitung berdasarkan item yang udah dateng
             rawData.forEach(row => {
                 let noPO = row.noPO || "-";
                 let vendor = row.vendor || "-";
@@ -532,11 +624,11 @@
                 if (!groupedData[noPO]) {
                     groupedData[noPO] = { 
                         items: [], 
-                        hasReceived: false, 
-                        hasProgress: false, 
                         allItemsCount: 0,
                         receivedItemsCount: 0,
+                        progressItemsCount: 0,
                         pendingItemsCount: 0,
+                        billingStatus: "-", 
                         vendor: vendor, 
                         noPR: row.noPR,
                         tglTampil: []
@@ -546,17 +638,21 @@
                 groupedData[noPO].items.push(row);
                 groupedData[noPO].allItemsCount++;
 
-                // Ngecek per item apakah tanggal datangnya ada isinya
-                let tglDatangStr = String(row.tglDatang || "").trim();
-                let isReceivedItem = tglDatangStr !== "" && 
-                                     tglDatangStr !== "-" && 
-                                     !tglDatangStr.toUpperCase().includes("KIRIM VENDOR");
+                // Ambil Status (dari properti noReceive)
+                let rStatus = getStatusData(row);
+                let statusClass = classifyStatus(rStatus);
 
-                if (isReceivedItem) {
+                if (statusClass === 'RECEIVED') {
                     groupedData[noPO].receivedItemsCount++;
+                } else if (statusClass === 'PROGRESS') {
+                    groupedData[noPO].progressItemsCount++;
                 } else {
                     groupedData[noPO].pendingItemsCount++;
                 }
+
+                // Ambil Billing
+                let bStatus = getBillingStatus(row);
+                if (bStatus) groupedData[noPO].billingStatus = bStatus;
 
                 let stringTanggal = "";
                 let fDatang = formatTanggal(row.tglDatang);
@@ -570,28 +666,29 @@
                 if (stringTanggal !== "") groupedData[noPO].tglTampil.push(stringTanggal);
             });
 
-            // Tentukan Status Group berdasarkan perbandingan item
             let totalPO = Object.keys(groupedData).length;
             let totalReceived = 0;
             let totalProgress = 0;
             let totalPending = 0;
+            let totalPaid = 0; 
 
             Object.values(groupedData).forEach(g => {
-                // Kalau SEMUA item udah datang
+                // Tentukan Status Group Utama berdasarkan perbandingan item
                 if (g.receivedItemsCount === g.allItemsCount) {
                     g.statusGroup = 'RECEIVED';
                     totalReceived++;
                 } 
-                // Kalau SEBAGIAN item udah datang (Progress)
-                else if (g.receivedItemsCount > 0) {
+                else if (g.progressItemsCount > 0 || g.receivedItemsCount > 0) {
                     g.statusGroup = 'PROGRESS';
                     totalProgress++;
                 } 
-                // Kalau BELUM ADA sama sekali
                 else {
                     g.statusGroup = 'PENDING';
                     totalPending++;
                 }
+
+                g.isPaid = isBillingPaid(g.billingStatus);
+                if (g.isPaid) totalPaid++;
             });
 
             document.getElementById('statTotal').innerText = totalPO;
@@ -599,6 +696,9 @@
             document.getElementById('statProgress').innerText = totalProgress;
             document.getElementById('statPending').innerText = totalPending;
             document.getElementById('statVendor').innerText = allVendors.size;
+
+            document.getElementById('statBillingPaid').innerText = totalPaid;
+            document.getElementById('statBillingTotal').innerText = totalPO;
 
             currentPage = 1;
             renderTable();
@@ -620,14 +720,11 @@
                 let group = groupedData[key];
                 let matchStatus = true;
                 
-                // Filter Status
                 if (statusFilterVal === 'RECEIVED') matchStatus = group.statusGroup === 'RECEIVED';
-                if (statusFilterVal === 'PROGRESS') matchStatus = group.statusGroup === 'PROGRESS';
-                if (statusFilterVal === 'PENDING') matchStatus = group.statusGroup === 'PENDING';
-
-                if (currentFilterStatus === 'RECEIVED') matchStatus = group.statusGroup === 'RECEIVED';
-                if (currentFilterStatus === 'PROGRESS') matchStatus = group.statusGroup === 'PROGRESS';
-                if (currentFilterStatus === 'PENDING') matchStatus = group.statusGroup === 'PENDING';
+                else if (statusFilterVal === 'PROGRESS') matchStatus = group.statusGroup === 'PROGRESS';
+                else if (statusFilterVal === 'PENDING') matchStatus = group.statusGroup === 'PENDING';
+                else if (statusFilterVal === 'BILLING_PAID') matchStatus = group.isPaid === true;
+                else if (statusFilterVal === 'BILLING_UNPAID') matchStatus = group.isPaid === false;
 
                 let matchSearch = group.noPR.toLowerCase().includes(searchQuery) || 
                                   key.toLowerCase().includes(searchQuery) ||
@@ -676,7 +773,7 @@
                 if (group.statusGroup === 'RECEIVED') {
                     badgeHTML = `<span class="inline-flex items-center px-2.5 py-1 rounded-full text-[11px] font-semibold bg-emerald-100 text-emerald-700 whitespace-nowrap"><span class="w-1.5 h-1.5 rounded-full bg-emerald-500 mr-1.5"></span> Received</span>`;
                 } else if (group.statusGroup === 'PROGRESS') {
-                    badgeHTML = `<span class="inline-flex items-center px-2.5 py-1 rounded-full text-[11px] font-semibold bg-blue-100 text-blue-700 whitespace-nowrap"><span class="w-1.5 h-1.5 rounded-full bg-blue-500 mr-1.5"></span> Partial (${group.receivedItemsCount}/${group.allItemsCount})</span>`;
+                    badgeHTML = `<span class="inline-flex items-center px-2.5 py-1 rounded-full text-[11px] font-semibold bg-blue-100 text-blue-700 whitespace-nowrap"><span class="w-1.5 h-1.5 rounded-full bg-blue-500 mr-1.5"></span> Progress Kirim</span>`;
                 } else {
                     badgeHTML = `<span class="inline-flex items-center px-2.5 py-1 rounded-full text-[11px] font-semibold bg-amber-100 text-amber-700 whitespace-nowrap"><span class="w-1.5 h-1.5 rounded-full bg-amber-500 mr-1.5"></span> Pending</span>`;
                 }
@@ -695,8 +792,8 @@
                     <td class="py-4 px-4 text-slate-600 text-xs font-medium leading-relaxed">${displayDate}</td>
                     <td class="py-4 px-4">${badgeHTML}</td>
                     <td class="py-4 px-4 text-center">
-                        <button onclick="openDetailModal('${key.replace(/'/g, "\\'")}')" class="w-8 h-8 rounded-full text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 transition-colors flex items-center justify-center mx-auto">
-                            <i class="fa-solid fa-eye text-sm"></i>
+                        <button onclick="openDetailModal('${key.replace(/'/g, "\\'")}')" class="bg-slate-100 hover:bg-indigo-100 text-slate-600 hover:text-indigo-600 px-3 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1 mx-auto">
+                            <i class="fa-solid fa-receipt"></i> Cek
                         </button>
                     </td>
                 `;
@@ -715,27 +812,13 @@
                             ${badgeHTML}
                         </div>
                     </div>
-                    <div>
-                        <p class="text-xs text-slate-400 font-bold mb-1">No PR</p>
-                        <p class="text-sm font-semibold text-slate-700">${group.noPR}</p>
-                    </div>
-                    <div class="grid grid-cols-2 gap-2">
-                        <div>
-                            <p class="text-xs text-slate-400 font-bold mb-1">Vendor</p>
-                            <p class="text-sm text-slate-600 truncate">${group.vendor}</p>
-                        </div>
-                        <div>
-                            <p class="text-xs text-slate-400 font-bold mb-1">User</p>
-                            <p class="text-sm text-slate-600 truncate">${displayUser}</p>
-                        </div>
-                    </div>
                     <div class="flex justify-between items-end mt-2 pt-3 border-t border-slate-100">
                         <div>
                             <p class="text-xs text-slate-400 font-bold mb-1">Tgl Kirim / Datang</p>
                             <p class="text-xs font-medium text-slate-600 leading-relaxed">${displayDate}</p>
                         </div>
                         <button onclick="openDetailModal('${key.replace(/'/g, "\\'")}')" class="px-3 py-1.5 bg-indigo-50 text-indigo-600 rounded-lg text-xs font-bold hover:bg-indigo-100 transition">
-                            Lihat ${itemCount} Item
+                            Cek Detail
                         </button>
                     </div>
                 `;
@@ -778,6 +861,7 @@
             document.getElementById('statusFilter').value = status;
             currentPage = 1; 
             renderTable();
+            closeBillingModal();
         }
 
         function handleSearch() {
@@ -789,6 +873,13 @@
             currentFilterStatus = document.getElementById('statusFilter').value;
             currentPage = 1; 
             renderTable();
+        }
+
+        function openBillingModal() {
+            document.getElementById('billingModal').classList.remove('hidden');
+        }
+        function closeBillingModal() {
+            document.getElementById('billingModal').classList.add('hidden');
         }
 
         function openVendorModal() {
@@ -833,23 +924,57 @@
             document.getElementById('modalTitle').innerText = `Detail PR: ${group.noPR}`;
             document.getElementById('modalSubtitle').innerText = `PO: ${key} | Total ${group.items.length} item terdaftar.`;
 
+            let banner = document.getElementById('modalBillingBanner');
+            if (group.billingStatus && group.billingStatus !== "-") {
+                banner.classList.remove('hidden');
+                if (group.isPaid) {
+                    banner.className = "mb-4 rounded-xl p-4 border border-teal-200 bg-teal-50 flex items-center gap-3 text-teal-800";
+                    banner.innerHTML = `
+                        <div class="w-10 h-10 rounded-full bg-teal-200 text-teal-700 flex items-center justify-center text-xl shrink-0">
+                            <i class="fa-solid fa-check-circle"></i>
+                        </div>
+                        <div>
+                            <p class="text-xs font-bold text-teal-600 uppercase">Status Billing</p>
+                            <p class="text-lg font-extrabold">${group.billingStatus}</p>
+                        </div>
+                    `;
+                } else {
+                    banner.className = "mb-4 rounded-xl p-4 border border-rose-200 bg-rose-50 flex items-center gap-3 text-rose-800";
+                    banner.innerHTML = `
+                        <div class="w-10 h-10 rounded-full bg-rose-200 text-rose-700 flex items-center justify-center text-xl shrink-0">
+                            <i class="fa-solid fa-clock"></i>
+                        </div>
+                        <div>
+                            <p class="text-xs font-bold text-rose-600 uppercase">Status Billing</p>
+                            <p class="text-lg font-extrabold">${group.billingStatus}</p>
+                        </div>
+                    `;
+                }
+            } else {
+                banner.classList.add('hidden');
+            }
+
             let modalBody = document.getElementById('modalTableBody');
             modalBody.innerHTML = "";
 
             group.items.forEach(item => {
-                let statusBadge = "";
-                let status = (item.noReceive || "").toLowerCase();
+                // Ambil status dari properti noReceive
+                let rStatus = getStatusData(item);
+                let displayStatus = rStatus ? rStatus : "-";
                 
-                let tglDatangStr = String(item.tglDatang || "").trim();
-                let isReceivedItem = tglDatangStr !== "" && 
-                                     tglDatangStr !== "-" && 
-                                     !tglDatangStr.toUpperCase().includes("KIRIM VENDOR");
-
-                if (isReceivedItem) {
-                    statusBadge = `<span class="px-2 py-1 rounded text-[11px] font-bold bg-emerald-100 text-emerald-700 whitespace-nowrap">${item.noReceive}</span>`;
-                } else {
-                    statusBadge = `<span class="px-2 py-1 rounded text-[11px] font-bold bg-amber-100 text-amber-700 whitespace-nowrap">Belum Datang</span>`;
+                // Klasifikasi warna
+                let classStr = classifyStatus(rStatus);
+                let badgeClass = "bg-amber-100 text-amber-700"; // Default Pending
+                
+                if (classStr === 'RECEIVED') {
+                    badgeClass = "bg-emerald-100 text-emerald-700";
+                } else if (classStr === 'PROGRESS') {
+                    badgeClass = "bg-blue-100 text-blue-700";
+                } else if (!rStatus) {
+                    displayStatus = "Belum Datang"; // Tampilan jika kosong
                 }
+
+                let statusBadge = `<span class="px-2 py-1 rounded text-[11px] font-bold ${badgeClass} whitespace-nowrap">${displayStatus}</span>`;
 
                 let fDatang = formatTanggal(item.tglDatang);
                 let fKirim = formatTanggal(item.tglKirim);
@@ -885,8 +1010,10 @@
         window.onclick = function(event) {
             let detailModal = document.getElementById('detailModal');
             let vendorModal = document.getElementById('vendorModal');
+            let billingModal = document.getElementById('billingModal');
             if (event.target === detailModal) closeDetailModal();
             if (event.target === vendorModal) closeVendorModal();
+            if (event.target === billingModal) closeBillingModal();
         }
 
         document.addEventListener('DOMContentLoaded', fetchSheetData);
