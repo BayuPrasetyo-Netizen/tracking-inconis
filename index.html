@@ -72,7 +72,7 @@
             <i class="fa-solid fa-lock text-4xl text-indigo-600 mb-4"></i>
             <h2 class="text-2xl font-bold mb-2">Admin Login</h2>
             <p class="text-sm text-slate-500 mb-6">Masukkan PIN untuk akses menu input</p>
-            <input type="password" id="pinInput" placeholder="Masukkan PIN" class="w-full text-center tracking-widest text-lg p-3 border border-slate-300 rounded-xl mb-4 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+            <input type="password" id="pinInput" onkeypress="handleEnter(event, 'login')" placeholder="Masukkan PIN" class="w-full text-center tracking-widest text-lg p-3 border border-slate-300 rounded-xl mb-4 focus:outline-none focus:ring-2 focus:ring-indigo-500">
             <div class="flex gap-2">
                 <button onclick="document.getElementById('loginModal').classList.add('hidden')" class="flex-1 bg-slate-200 text-slate-700 py-3 rounded-xl font-bold hover:bg-slate-300 transition">Batal</button>
                 <button onclick="login()" class="flex-1 bg-indigo-600 text-white py-3 rounded-xl font-bold hover:bg-indigo-700 transition">Masuk</button>
@@ -195,7 +195,7 @@
                 <span class="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none text-slate-400">
                     <i class="fa-solid fa-magnifying-glass"></i>
                 </span>
-                <input type="text" id="searchInput" oninput="handleSearch()" placeholder="Cari No PR, PO, Vendor, User, atau Item..." class="w-full pl-11 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white transition placeholder:text-slate-400">
+                <input type="text" id="searchInput" oninput="handleSearch()" placeholder="Cari No PR, PO (Pisahkan dengan koma)..." class="w-full pl-11 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white transition placeholder:text-slate-400">
             </div>
 
             <div class="flex items-center space-x-3 w-full sm:w-auto justify-between sm:justify-end">
@@ -292,7 +292,7 @@
             
             <div class="p-6 overflow-y-auto flex-grow bg-slate-50">
                 <div class="flex gap-2 mb-6">
-                    <input type="text" id="searchPOModal" placeholder="Ketik No PO..." class="w-full p-3 border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500 text-sm">
+                    <input type="text" id="searchPOModal" onkeypress="handleEnter(event, 'searchPO')" placeholder="Ketik No PO..." class="w-full p-3 border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500 text-sm">
                     <button onclick="searchPO()" class="bg-indigo-600 text-white px-6 rounded-xl font-bold hover:bg-indigo-700 transition">Cari</button>
                 </div>
 
@@ -312,7 +312,7 @@
                 <div id="receiveInputContainer" class="hidden bg-white p-5 rounded-xl border border-slate-200 shadow-sm space-y-4">
                     <div>
                         <label class="block text-sm font-bold text-slate-700 mb-2">Tanggal Datang</label>
-                        <input type="date" id="inputTglDatang" class="w-full p-3 border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500 text-sm">
+                        <input type="date" id="inputTglDatang" onkeypress="handleEnter(event, 'simpanBarangDatang')" class="w-full p-3 border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500 text-sm">
                     </div>
                     
                     <button onclick="simpanBarangDatang()" id="btnSimpan" class="w-full bg-emerald-600 text-white py-3 rounded-xl font-bold hover:bg-emerald-700 transition shadow-md mt-4">
@@ -408,7 +408,19 @@
         let rowsPerPage = 100;
 
         // ==========================================
-        // FUNGSI MEMBACA STATUS (DARI PROPERTI "noReceive")
+        // FUNGSI HANDLE ENTER
+        // ==========================================
+        function handleEnter(event, actionName) {
+            if (event.key === 'Enter') {
+                event.preventDefault(); 
+                if (typeof window[actionName] === 'function') {
+                    window[actionName]();
+                }
+            }
+        }
+
+        // ==========================================
+        // FUNGSI MEMBACA STATUS
         // ==========================================
         function getStatusData(row) {
             let val = row.noReceive; 
@@ -417,24 +429,21 @@
         }
 
         // ==========================================
-        // FUNGSI KLASIFIKASI WARNA STATUS (DIPERBARUI)
+        // FUNGSI KLASIFIKASI WARNA STATUS
         // ==========================================
         function classifyStatus(statusText) {
             if (!statusText) return 'PENDING';
             
             const s = statusText.toUpperCase();
             
-            // Aturan 1: CLOSE RECEIVED / CLOSED masuk RECEIVED (Hijau)
             if (s.includes("CLOSE RECEIVED") || s.includes("CLOSED")) {
                 return 'RECEIVED';
             }
             
-            // Aturan 2: PENGIRIMAN LOKASI masuk PROGRESS KIRIM (Biru)
             if (s.includes("PENGIRIMAN LOKASI")) {
                 return 'PROGRESS';
             }
             
-            // Aturan 3: PO KIRIM VENDOR & DATANG DARI VENDOR masuk PENDING (Kuning)
             return 'PENDING';
         }
 
@@ -704,11 +713,22 @@
             renderTable();
         }
 
+        // ==========================================
+        // UPDATE FUNGSI RENDER TABLE (MULTI-SEARCH FIX: OR LOGIC)
+        // ==========================================
         function renderTable() {
             const tbody = document.getElementById('tableBody');
             const mobileBody = document.getElementById('mobileCardBody');
             const emptyState = document.getElementById('emptyState');
-            const searchQuery = document.getElementById('searchInput').value.toLowerCase();
+            
+            // 1. Ubah ke huruf kecil
+            const rawSearch = document.getElementById('searchInput').value.toLowerCase();
+            
+            // 2. PISAHKAN HANYA BERDASARKAN KOMA (,)
+            const searchTerms = rawSearch.split(',')
+                .map(term => term.trim())
+                .filter(term => term.length > 0);
+
             const statusFilterVal = document.getElementById('statusFilter').value;
 
             tbody.innerHTML = "";
@@ -726,13 +746,19 @@
                 else if (statusFilterVal === 'BILLING_PAID') matchStatus = group.isPaid === true;
                 else if (statusFilterVal === 'BILLING_UNPAID') matchStatus = group.isPaid === false;
 
-                let matchSearch = group.noPR.toLowerCase().includes(searchQuery) || 
-                                  key.toLowerCase().includes(searchQuery) ||
-                                  (group.vendor||"").toLowerCase().includes(searchQuery) ||
-                                  Array.from(group.items).some(i => 
-                                      (i.item||"").toLowerCase().includes(searchQuery) || 
-                                      (i.user||"").toLowerCase().includes(searchQuery)
-                                  );
+                // 3. Logika Pencarian: Harus mengandung SALAH SATU kata kunci (OR)
+                let matchSearch = true;
+                if (searchTerms.length > 0) {
+                    matchSearch = searchTerms.some(term => {
+                        return group.noPR.toLowerCase().includes(term) || 
+                               key.toLowerCase().includes(term) ||
+                               (group.vendor||"").toLowerCase().includes(term) ||
+                               Array.from(group.items).some(i => 
+                                   (i.item||"").toLowerCase().includes(term) || 
+                                   (i.user||"").toLowerCase().includes(term)
+                               );
+                    });
+                }
 
                 return matchStatus && matchSearch;
             });
