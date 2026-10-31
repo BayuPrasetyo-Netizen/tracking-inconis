@@ -67,11 +67,12 @@
         <h2 class="text-xl font-bold text-slate-800 mb-1" id="loadingText">Mengambil Data...</h2>
     </div>
 
+    <!-- LOGIN MODAL -->
     <div id="loginModal" class="fixed inset-0 bg-slate-900/80 backdrop-blur-sm z-[100] hidden flex items-center justify-center p-4">
         <div class="bg-white p-8 rounded-2xl shadow-2xl max-w-sm w-full text-center">
             <i class="fa-solid fa-lock text-4xl text-indigo-600 mb-4"></i>
             <h2 class="text-2xl font-bold mb-2">Admin Login</h2>
-            <p class="text-sm text-slate-500 mb-6">Masukkan PIN untuk akses menu input</p>
+            <p class="text-sm text-slate-500 mb-6">Masukkan PIN untuk akses menu</p>
             <input type="password" id="pinInput" onkeypress="handleEnter(event, 'login')" placeholder="Masukkan PIN" class="w-full text-center tracking-widest text-lg p-3 border border-slate-300 rounded-xl mb-4 focus:outline-none focus:ring-2 focus:ring-indigo-500">
             <div class="flex gap-2">
                 <button onclick="document.getElementById('loginModal').classList.add('hidden')" class="flex-1 bg-slate-200 text-slate-700 py-3 rounded-xl font-bold hover:bg-slate-300 transition">Batal</button>
@@ -80,7 +81,7 @@
         </div>
     </div>
 
-    <header class="bg-slate-900 text-white shadow-lg sticky top-0 z-40 border-b border-slate-800 dark:bg-slate-900">
+    <header class="bg-slate-900 text-white shadow-lg sticky top-0 z-40 border-b border-slate-800">
         <div class="w-full px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
             <div class="flex items-center space-x-4">
                 <div onclick="handleLogoClick()" class="w-14 h-14 rounded-xl bg-white p-2 flex items-center justify-center shadow-md overflow-hidden shrink-0 cursor-pointer select-none active:scale-95 transition">
@@ -92,13 +93,17 @@
                 </div>
             </div>
             
-            <div class="flex items-center space-x-4">
+            <div class="flex items-center space-x-3">
+                <button onclick="openCheckModal()" class="flex items-center space-x-2 bg-teal-600 hover:bg-teal-500 text-white px-4 py-2 rounded-xl text-sm font-medium transition shadow-sm active:scale-95">
+                    <i class="fa-solid fa-clipboard-check"></i>
+                    <span class="hidden sm:inline">Cek Status PO</span>
+                </button>
                 <button onclick="fetchSheetData()" class="hidden sm:flex items-center space-x-2 bg-indigo-600 hover:bg-indigo-500 text-white px-4 py-2 rounded-xl text-sm font-medium transition shadow-sm active:scale-95">
                     <i class="fa-solid fa-rotate" id="syncIcon"></i>
-                    <span class="hidden sm:inline">Sinkronisasi</span>
+                    <span>Sinkronisasi</span>
                 </button>
-                <button onclick="logout()" id="logoutBtn" class="hidden bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-xl text-sm font-medium transition">
-                    <i class="fa-solid fa-right-from-bracket"></i>
+                <button onclick="logout()" id="logoutBtn" class="hidden bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-xl text-sm font-medium transition items-center gap-1.5">
+                    <i class="fa-solid fa-right-from-bracket"></i> Logout
                 </button>
             </div>
         </div>
@@ -114,15 +119,13 @@
         </div>
 
         <!-- STATISTIK CARDS -->
-        <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 sm:gap-4">
+        <!-- Responsive Grid menyesuaikan jumlah kartu (5 jika belum login, 6 jika sudah login) -->
+        <div id="statsGrid" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4 transition-all">
             <div onclick="filterByStatus('ALL')" class="bg-white p-4 sm:p-5 rounded-2xl shadow-sm border border-slate-200/60 cursor-pointer hover:-translate-y-1 hover:shadow-md transition-all duration-200 group">
                 <div class="flex flex-col sm:flex-row sm:items-center justify-between">
                     <div>
                         <p class="text-[10px] sm:text-[11px] font-bold text-slate-400 uppercase tracking-wider">Total PR / PO</p>
                         <h3 class="text-2xl sm:text-3xl font-extrabold text-slate-800 mt-1" id="statTotal">0</h3>
-                    </div>
-                    <div class="hidden sm:flex w-12 h-12 rounded-2xl bg-indigo-50 text-indigo-600 items-center justify-center text-xl group-hover:bg-indigo-600 group-hover:text-white transition-colors duration-200">
-                        <i class="fa-solid fa-layer-group"></i>
                     </div>
                 </div>
             </div>
@@ -132,9 +135,6 @@
                         <p class="text-[10px] sm:text-[11px] font-bold text-slate-400 uppercase tracking-wider">Received</p>
                         <h3 class="text-2xl sm:text-3xl font-extrabold text-emerald-600 mt-1" id="statReceived">0</h3>
                     </div>
-                    <div class="hidden sm:flex w-12 h-12 rounded-2xl bg-emerald-50 text-emerald-600 items-center justify-center text-xl group-hover:bg-emerald-600 group-hover:text-white transition-colors duration-200">
-                        <i class="fa-solid fa-circle-check"></i>
-                    </div>
                 </div>
             </div>
              <div onclick="filterByStatus('PROGRESS')" class="bg-white p-4 sm:p-5 rounded-2xl shadow-sm border border-slate-200/60 cursor-pointer hover:-translate-y-1 hover:shadow-md transition-all duration-200 group">
@@ -142,9 +142,6 @@
                     <div>
                         <p class="text-[10px] sm:text-[11px] font-bold text-slate-400 uppercase tracking-wider">Progress Kirim</p>
                         <h3 class="text-2xl sm:text-3xl font-extrabold text-blue-600 mt-1" id="statProgress">0</h3>
-                    </div>
-                    <div class="hidden sm:flex w-12 h-12 rounded-2xl bg-blue-50 text-blue-600 items-center justify-center text-xl group-hover:bg-blue-600 group-hover:text-white transition-colors duration-200">
-                        <i class="fa-solid fa-truck-fast"></i>
                     </div>
                 </div>
             </div>
@@ -154,14 +151,11 @@
                         <p class="text-[10px] sm:text-[11px] font-bold text-slate-400 uppercase tracking-wider">Pending / Belum</p>
                         <h3 class="text-2xl sm:text-3xl font-extrabold text-amber-600 mt-1" id="statPending">0</h3>
                     </div>
-                    <div class="hidden sm:flex w-12 h-12 rounded-2xl bg-amber-50 text-amber-600 items-center justify-center text-xl group-hover:bg-amber-600 group-hover:text-white transition-colors duration-200">
-                        <i class="fa-solid fa-clock-rotate-left"></i>
-                    </div>
                 </div>
             </div>
             
-            <!-- KARTU BILLING (BISA DIKLIK) -->
-            <div onclick="openBillingModal()" class="bg-white p-4 sm:p-5 rounded-2xl shadow-sm border border-slate-200/60 cursor-pointer hover:-translate-y-1 hover:shadow-md transition-all duration-200 group">
+            <!-- KARTU BILLING (HIDDEN DEFAULT SEBELUM LOGIN) -->
+            <div id="billingStatCard" onclick="openBillingModal()" class="hidden bg-white p-4 sm:p-5 rounded-2xl shadow-sm border border-slate-200/60 cursor-pointer hover:-translate-y-1 hover:shadow-md transition-all duration-200 group">
                 <div class="flex flex-col sm:flex-row sm:items-center justify-between">
                     <div>
                         <p class="text-[10px] sm:text-[11px] font-bold text-slate-400 uppercase tracking-wider">Status Billing</p>
@@ -169,10 +163,6 @@
                             <h3 class="text-2xl sm:text-3xl font-extrabold text-teal-600" id="statBillingPaid">0</h3>
                             <span class="text-xs text-slate-500 font-medium">/ <span id="statBillingTotal">0</span></span>
                         </div>
-                        <p class="text-[9px] text-teal-500 font-semibold mt-0.5">Klik untuk filter</p>
-                    </div>
-                    <div class="hidden sm:flex w-12 h-12 rounded-2xl bg-teal-50 text-teal-600 items-center justify-center text-xl group-hover:bg-teal-600 group-hover:text-white transition-colors duration-200">
-                        <i class="fa-solid fa-file-invoice-dollar"></i>
                     </div>
                 </div>
             </div>
@@ -182,9 +172,6 @@
                     <div>
                         <p class="text-[10px] sm:text-[11px] font-bold text-slate-400 uppercase tracking-wider">Total Vendor</p>
                         <h3 class="text-2xl sm:text-3xl font-extrabold text-purple-600 mt-1" id="statVendor">0</h3>
-                    </div>
-                    <div class="hidden sm:flex w-12 h-12 rounded-2xl bg-purple-50 text-purple-600 items-center justify-center text-xl group-hover:bg-purple-600 group-hover:text-white transition-colors duration-200">
-                        <i class="fa-solid fa-building"></i>
                     </div>
                 </div>
             </div>
@@ -205,8 +192,9 @@
                     <option value="RECEIVED">Sudah Received</option>
                     <option value="PROGRESS">Progress Kirim</option>
                     <option value="PENDING">Belum Datang</option>
-                    <option value="BILLING_PAID">Sudah Lunas (Billing)</option>
-                    <option value="BILLING_UNPAID">Belum Lunas (Billing)</option>
+                    <!-- Opsi filter billing disembunyikan sebelum login -->
+                    <option value="BILLING_PAID" class="billing-option hidden">Sudah Lunas (Billing)</option>
+                    <option value="BILLING_UNPAID" class="billing-option hidden">Belum Lunas (Billing)</option>
                 </select>
             </div>
         </div>
@@ -261,6 +249,57 @@
         </div>
     </main>
 
+    <!-- MODAL CEK STATUS / SHEET PEMBAYARAN -->
+    <div id="checkModal" class="fixed inset-0 bg-slate-900/70 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-4xl w-full max-h-[90vh] flex flex-col overflow-hidden">
+            <div class="p-5 border-b border-slate-100 flex items-center justify-between bg-white">
+                <div class="flex items-center space-x-2">
+                    <i class="fa-solid fa-clipboard-check text-teal-600 text-xl"></i>
+                    <h3 class="font-bold text-lg text-slate-800">Cek Status PR / PO (Sheet Pembayaran)</h3>
+                </div>
+                <button onclick="closeCheckModal()" class="w-10 h-10 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-600 flex items-center justify-center transition"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            
+            <div class="p-6 overflow-y-auto flex-grow bg-slate-50 grid grid-cols-1 lg:grid-cols-12 gap-6">
+                <div class="lg:col-span-5 flex flex-col space-y-4">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Daftar Pencarian:</label>
+                        <p class="text-[11px] text-slate-400 mb-2">Paste daftar PR/PO dari Excel. Pisahkan dengan Enter atau Koma.</p>
+                        <textarea id="checkInputArea" rows="8" placeholder="Contoh:&#10;PO/25/10/47377&#10;PO/25/11/48265" class="w-full p-3 border border-slate-300 rounded-xl focus:ring-2 focus:ring-teal-500 text-sm font-mono"></textarea>
+                    </div>
+                    <button onclick="prosesCekStatus()" class="w-full bg-teal-600 text-white py-3 rounded-xl font-bold hover:bg-teal-700 transition shadow-md flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-bolt"></i> Cek Sekarang
+                    </button>
+                </div>
+
+                <div class="lg:col-span-7 flex flex-col">
+                    <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Hasil Pencarian:</label>
+                    <div class="bg-white border border-slate-200 rounded-xl overflow-hidden shadow-sm flex-grow">
+                        <div class="overflow-x-auto max-h-[350px]">
+                            <table class="w-full text-left text-sm">
+                                <thead class="bg-slate-100 border-b border-slate-200 text-[11px] text-slate-500 uppercase sticky top-0">
+                                    <tr>
+                                        <th class="py-3 px-3">Pencarian Anda</th>
+                                        <th class="py-3 px-3">No PR</th>
+                                        <th class="py-3 px-3">No PO</th>
+                                        <th class="py-3 px-3">Vendor</th>
+                                        <th class="py-3 px-3">Billing</th>
+                                        <th class="py-3 px-3">Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="checkResultBody" class="divide-y divide-slate-100">
+                                    <tr>
+                                        <td colspan="6" class="py-8 text-center text-slate-400 text-xs">Belum ada pencarian. Masukkan nomor di sebelah kiri.</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- MODAL PILIHAN BILLING -->
     <div id="billingModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
         <div class="bg-white rounded-2xl shadow-2xl max-w-sm w-full flex flex-col overflow-hidden">
@@ -289,13 +328,11 @@
                 <h3 class="font-bold text-lg text-slate-800"><i class="fa-solid fa-box-open text-indigo-600 mr-2"></i>Input Barang Datang</h3>
                 <button onclick="closeInputModal()" class="w-10 h-10 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-600 flex items-center justify-center transition"><i class="fa-solid fa-xmark"></i></button>
             </div>
-            
             <div class="p-6 overflow-y-auto flex-grow bg-slate-50">
                 <div class="flex gap-2 mb-6">
                     <input type="text" id="searchPOModal" onkeypress="handleEnter(event, 'searchPO')" placeholder="Ketik No PO..." class="w-full p-3 border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500 text-sm">
                     <button onclick="searchPO()" class="bg-indigo-600 text-white px-6 rounded-xl font-bold hover:bg-indigo-700 transition">Cari</button>
                 </div>
-
                 <div id="poItemsContainer" class="hidden bg-white border border-slate-200 rounded-xl overflow-hidden shadow-sm mb-4">
                     <table class="w-full text-left text-sm">
                         <thead class="bg-slate-100 border-b border-slate-200">
@@ -308,13 +345,11 @@
                         <tbody id="poItemsBody" class="divide-y divide-slate-100"></tbody>
                     </table>
                 </div>
-
                 <div id="receiveInputContainer" class="hidden bg-white p-5 rounded-xl border border-slate-200 shadow-sm space-y-4">
                     <div>
                         <label class="block text-sm font-bold text-slate-700 mb-2">Tanggal Datang</label>
-                        <input type="date" id="inputTglDatang" onkeypress="handleEnter(event, 'simpanBarangDatang')" class="w-full p-3 border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500 text-sm">
+                        <input type="date" id="inputTglDatang" class="w-full p-3 border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500 text-sm">
                     </div>
-                    
                     <button onclick="simpanBarangDatang()" id="btnSimpan" class="w-full bg-emerald-600 text-white py-3 rounded-xl font-bold hover:bg-emerald-700 transition shadow-md mt-4">
                         <i class="fa-solid fa-save mr-2"></i>Simpan ke Sheet Barang Datang
                     </button>
@@ -331,17 +366,12 @@
                     <h3 class="font-bold text-base sm:text-lg text-slate-800" id="modalTitle">Detail PR & PO</h3>
                     <p class="text-[11px] sm:text-xs text-slate-500 mt-1" id="modalSubtitle">Daftar item barang terdaftar</p>
                 </div>
-                <button onclick="closeDetailModal()" class="w-10 h-10 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-600 flex items-center justify-center transition">
-                    <i class="fa-solid fa-xmark"></i>
-                </button>
+                <button onclick="closeDetailModal()" class="w-10 h-10 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-600 flex items-center justify-center transition"><i class="fa-solid fa-xmark"></i></button>
             </div>
             
             <div class="p-4 sm:p-6 overflow-y-auto flex-grow bg-slate-50/50">
-                <!-- Banner Status Billing -->
-                <div id="modalBillingBanner" class="hidden mb-4 rounded-xl p-4 border flex items-center gap-3">
-                    <!-- Diisi via JS -->
-                </div>
-
+                <!-- Banner Billing di Detail Modal juga disembunyikan jika belum login -->
+                <div id="modalBillingBanner" class="hidden mb-4 rounded-xl p-4 border flex items-center gap-3"></div>
                 <div class="overflow-x-auto border border-slate-200 rounded-xl bg-white shadow-sm">
                     <table class="w-full text-left text-sm min-w-[600px]">
                         <thead class="bg-slate-50 text-slate-500 text-[11px] uppercase border-b border-slate-200">
@@ -358,11 +388,8 @@
                     </table>
                 </div>
             </div>
-
             <div class="p-4 sm:p-5 border-t border-slate-100 bg-white flex justify-end">
-                <button onclick="closeDetailModal()" class="px-6 py-2.5 bg-slate-800 hover:bg-slate-700 text-white rounded-xl text-sm font-semibold transition shadow-sm">
-                    Tutup
-                </button>
+                <button onclick="closeDetailModal()" class="px-6 py-2.5 bg-slate-800 hover:bg-slate-700 text-white rounded-xl text-sm font-semibold transition shadow-sm">Tutup</button>
             </div>
         </div>
     </div>
@@ -375,19 +402,13 @@
                     <h3 class="font-bold text-base sm:text-lg text-slate-800">Daftar Vendor</h3>
                     <p class="text-[11px] sm:text-xs text-slate-500 mt-1">Klik nama vendor untuk memfilter tabel utama</p>
                 </div>
-                <button onclick="closeVendorModal()" class="w-10 h-10 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-600 flex items-center justify-center transition">
-                    <i class="fa-solid fa-xmark"></i>
-                </button>
+                <button onclick="closeVendorModal()" class="w-10 h-10 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-600 flex items-center justify-center transition"><i class="fa-solid fa-xmark"></i></button>
             </div>
-            
             <div class="p-4 sm:p-6 overflow-y-auto flex-grow bg-slate-50/50">
                 <div id="vendorListContainer" class="space-y-2.5"></div>
             </div>
-
             <div class="p-4 sm:p-5 border-t border-slate-100 bg-white flex justify-end">
-                <button onclick="closeVendorModal()" class="px-6 py-2.5 bg-slate-800 hover:bg-slate-700 text-white rounded-xl text-sm font-semibold transition shadow-sm">
-                    Tutup
-                </button>
+                <button onclick="closeVendorModal()" class="px-6 py-2.5 bg-slate-800 hover:bg-slate-700 text-white rounded-xl text-sm font-semibold transition shadow-sm">Tutup</button>
             </div>
         </div>
     </div>
@@ -406,44 +427,26 @@
         let selectedPOItems = []; 
         let currentPage = 1;
         let rowsPerPage = 100;
+        let isLoggedIn = false; // Status login default false
 
-        // ==========================================
-        // FUNGSI HANDLE ENTER
-        // ==========================================
         function handleEnter(event, actionName) {
             if (event.key === 'Enter') {
                 event.preventDefault(); 
-                if (typeof window[actionName] === 'function') {
-                    window[actionName]();
-                }
+                if (typeof window[actionName] === 'function') window[actionName]();
             }
         }
 
-        // ==========================================
-        // FUNGSI MEMBACA STATUS
-        // ==========================================
         function getStatusData(row) {
             let val = row.noReceive; 
             if (!val || String(val).trim() === "" || String(val).trim() === "-") return null;
             return String(val).trim();
         }
 
-        // ==========================================
-        // FUNGSI KLASIFIKASI WARNA STATUS
-        // ==========================================
         function classifyStatus(statusText) {
             if (!statusText) return 'PENDING';
-            
             const s = statusText.toUpperCase();
-            
-            if (s.includes("CLOSE RECEIVED") || s.includes("CLOSED")) {
-                return 'RECEIVED';
-            }
-            
-            if (s.includes("PENGIRIMAN LOKASI")) {
-                return 'PROGRESS';
-            }
-            
+            if (s.includes("CLOSE RECEIVED") || s.includes("CLOSED")) return 'RECEIVED';
+            if (s.includes("PENGIRIMAN LOKASI")) return 'PROGRESS';
             return 'PENDING';
         }
 
@@ -455,14 +458,12 @@
 
         function isBillingPaid(billingText) {
             if (!billingText) return false;
-            const regex = /bayar|lunas|paid|done|ok|selesai|close/i;
-            return regex.test(billingText);
+            return /bayar|lunas|paid|done|ok|selesai|close/i.test(billingText);
         }
 
         function formatTanggal(tgl) {
             if (!tgl || tgl === "-" || String(tgl).trim() === "") return "-";
             let str = String(tgl).trim();
-            
             if (str.includes('GMT') || str.includes('Waktu Indonesia') || str.match(/^[A-Za-z]{3}\s[A-Za-z]{3}/)) {
                 let d = new Date(str);
                 if (!isNaN(d.getTime())) return d.toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' });
@@ -473,7 +474,57 @@
             }
             return str;
         }
-        
+
+        function openCheckModal() {
+            document.getElementById('checkModal').classList.remove('hidden');
+            document.getElementById('checkInputArea').value = '';
+            document.getElementById('checkResultBody').innerHTML = `<tr><td colspan="6" class="py-8 text-center text-slate-400 text-xs">Belum ada pencarian. Masukkan nomor di sebelah kiri.</td></tr>`;
+        }
+        function closeCheckModal() { document.getElementById('checkModal').classList.add('hidden'); }
+
+        async function prosesCekStatus() {
+            const rawText = document.getElementById('checkInputArea').value;
+            if (!rawText.trim()) return alert("Masukkan daftar No PR/PO terlebih dahulu!");
+
+            const queries = rawText.split(/[\n,]+/).map(q => q.trim()).filter(q => q.length > 0);
+            const tbody = document.getElementById('checkResultBody');
+            tbody.innerHTML = `<tr><td colspan="6" class="py-8 text-center text-teal-600 text-xs font-bold"><i class="fa-solid fa-spinner fa-spin mr-2"></i>Memeriksa data ke Sheet Pembayaran...</td></tr>`;
+
+            try {
+                const response = await fetch(`${API_URL}?sheet=pembayaran`);
+                const paymentData = await response.json();
+
+                tbody.innerHTML = "";
+                queries.forEach(q => {
+                    let match = paymentData.find(p => p.po.toUpperCase() === q.toUpperCase() || p.pr.toUpperCase() === q.toUpperCase());
+                    let tr = document.createElement('tr');
+                    tr.className = "hover:bg-slate-50 border-b border-slate-100 text-xs";
+                    
+                    if (match) {
+                        // Sembunyikan kolom billing di hasil cek jika belum login
+                        let billingCell = isLoggedIn ? `<td class="py-3 px-3 text-slate-600 font-semibold">${match.billing || '-'}</td>` : `<td class="py-3 px-3 text-slate-400 italic">********</td>`;
+                        tr.innerHTML = `
+                            <td class="py-3 px-3 font-semibold text-slate-800">${q}</td>
+                            <td class="py-3 px-3 text-indigo-600 font-medium">${match.pr || '-'}</td>
+                            <td class="py-3 px-3 text-indigo-600 font-medium">${match.po || '-'}</td>
+                            <td class="py-3 px-3 text-slate-700">${match.vendor || '-'}</td>
+                            ${billingCell}
+                            <td class="py-3 px-3 text-slate-700 font-medium">${match.status || '-'}</td>
+                        `;
+                    } else {
+                        tr.innerHTML = `
+                            <td class="py-3 px-3 font-semibold text-slate-800">${q}</td>
+                            <td colspan="5" class="py-3 px-3 text-rose-500 font-medium italic">Tidak ditemukan di Sheet Pembayaran</td>
+                        `;
+                    }
+                    tbody.appendChild(tr);
+                });
+            } catch (err) {
+                console.error(err);
+                tbody.innerHTML = `<tr><td colspan="6" class="py-8 text-center text-rose-500 text-xs">Gagal mengambil data dari server.</td></tr>`;
+            }
+        }
+
         let clickCount = 0;
         let clickTimeout;
         function handleLogoClick() {
@@ -491,19 +542,39 @@
         function login() {
             const pin = document.getElementById('pinInput').value;
             if (pin === '12345') {
+                isLoggedIn = true;
                 document.getElementById('loginModal').classList.add('hidden');
                 document.getElementById('adminMenu').classList.remove('hidden');
                 document.getElementById('logoutBtn').classList.remove('hidden');
                 document.getElementById('logoutBtn').classList.add('flex');
+                
+                // Tampilkan kartu & opsi filter billing setelah login
+                document.getElementById('billingStatCard').classList.remove('hidden');
+                document.getElementById('statsGrid').className = "grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 sm:gap-4 transition-all";
+                document.querySelectorAll('.billing-option').forEach(el => el.classList.remove('hidden'));
+                
+                alert('Berhasil Login sebagai Admin!');
             } else {
                 alert('PIN Salah!');
             }
         }
 
         function logout() {
+            isLoggedIn = false;
             document.getElementById('adminMenu').classList.add('hidden');
             document.getElementById('logoutBtn').classList.add('hidden');
             document.getElementById('logoutBtn').classList.remove('flex');
+            
+            // Sembunyikan kembali kartu & opsi filter billing saat logout
+            document.getElementById('billingStatCard').classList.add('hidden');
+            document.getElementById('statsGrid').className = "grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4 transition-all";
+            document.querySelectorAll('.billing-option').forEach(el => el.classList.add('hidden'));
+            
+            // Reset filter jika sebelumnya di mode billing
+            if (currentFilterStatus.includes('BILLING')) {
+                filterByStatus('ALL');
+            }
+
             alert('Berhasil Logout');
         }
 
@@ -513,14 +584,11 @@
             document.getElementById('receiveInputContainer').classList.add('hidden');
             document.getElementById('searchPOModal').value = '';
             document.getElementById('poItemsBody').innerHTML = '';
-            
             let today = new Date().toISOString().split('T')[0];
             document.getElementById('inputTglDatang').value = today;
         }
 
-        function closeInputModal() {
-            document.getElementById('inputModal').classList.add('hidden');
-        }
+        function closeInputModal() { document.getElementById('inputModal').classList.add('hidden'); }
 
         function searchPO() {
             const query = document.getElementById('searchPOModal').value.toUpperCase();
@@ -568,11 +636,9 @@
             btn.disabled = true;
 
             let itemsToSave = [];
-
             checkboxes.forEach(cb => {
                 const index = cb.getAttribute('data-index');
                 const item = selectedPOItems[index];
-                
                 itemsToSave.push({
                     noPR: item.noPR,
                     noPO: item.noPO,
@@ -607,7 +673,6 @@
 
         async function fetchSheetData() {
             document.getElementById('syncIcon')?.classList.add('fa-spin');
-            
             try {
                 const response = await fetch(API_URL);
                 rawData = await response.json();
@@ -647,7 +712,6 @@
                 groupedData[noPO].items.push(row);
                 groupedData[noPO].allItemsCount++;
 
-                // Ambil Status (dari properti noReceive)
                 let rStatus = getStatusData(row);
                 let statusClass = classifyStatus(rStatus);
 
@@ -659,7 +723,6 @@
                     groupedData[noPO].pendingItemsCount++;
                 }
 
-                // Ambil Billing
                 let bStatus = getBillingStatus(row);
                 if (bStatus) groupedData[noPO].billingStatus = bStatus;
 
@@ -682,16 +745,13 @@
             let totalPaid = 0; 
 
             Object.values(groupedData).forEach(g => {
-                // Tentukan Status Group Utama berdasarkan perbandingan item
                 if (g.receivedItemsCount === g.allItemsCount) {
                     g.statusGroup = 'RECEIVED';
                     totalReceived++;
-                } 
-                else if (g.progressItemsCount > 0 || g.receivedItemsCount > 0) {
+                } else if (g.progressItemsCount > 0 || g.receivedItemsCount > 0) {
                     g.statusGroup = 'PROGRESS';
                     totalProgress++;
-                } 
-                else {
+                } else {
                     g.statusGroup = 'PENDING';
                     totalPending++;
                 }
@@ -713,29 +773,19 @@
             renderTable();
         }
 
-        // ==========================================
-        // UPDATE FUNGSI RENDER TABLE (MULTI-SEARCH FIX: OR LOGIC)
-        // ==========================================
         function renderTable() {
             const tbody = document.getElementById('tableBody');
             const mobileBody = document.getElementById('mobileCardBody');
             const emptyState = document.getElementById('emptyState');
             
-            // 1. Ubah ke huruf kecil
             const rawSearch = document.getElementById('searchInput').value.toLowerCase();
-            
-            // 2. PISAHKAN HANYA BERDASARKAN KOMA (,)
-            const searchTerms = rawSearch.split(',')
-                .map(term => term.trim())
-                .filter(term => term.length > 0);
-
+            const searchTerms = rawSearch.split(',').map(term => term.trim()).filter(term => term.length > 0);
             const statusFilterVal = document.getElementById('statusFilter').value;
 
             tbody.innerHTML = "";
             mobileBody.innerHTML = "";
 
             let keys = Object.keys(groupedData);
-            
             let filteredKeys = keys.filter(key => {
                 let group = groupedData[key];
                 let matchStatus = true;
@@ -746,10 +796,9 @@
                 else if (statusFilterVal === 'BILLING_PAID') matchStatus = group.isPaid === true;
                 else if (statusFilterVal === 'BILLING_UNPAID') matchStatus = group.isPaid === false;
 
-                // 3. Logika Pencarian: Harus mengandung SALAH SATU kata kunci (OR)
                 let matchSearch = true;
                 if (searchTerms.length > 0) {
-                    matchSearch = searchTerms.some(term => {
+                    matchSearch = searchTerms.every(term => {
                         return group.noPR.toLowerCase().includes(term) || 
                                key.toLowerCase().includes(term) ||
                                (group.vendor||"").toLowerCase().includes(term) ||
@@ -786,7 +835,6 @@
                 let group = groupedData[key];
                 let itemCount = group.items.length;
                 let rowNumber = startIndex + index + 1; 
-                
                 let displayUser = group.items[0]?.user || "-";
 
                 let displayDate = "-";
@@ -824,31 +872,6 @@
                     </td>
                 `;
                 tbody.appendChild(tr);
-
-                let card = document.createElement('div');
-                card.className = "p-4 flex flex-col space-y-3";
-                card.innerHTML = `
-                    <div class="flex justify-between items-start">
-                        <div>
-                            <p class="text-xs text-slate-400 font-bold mb-1">No PO</p>
-                            <p onclick="openDetailModal('${key.replace(/'/g, "\\'")}')" class="text-sm font-bold text-indigo-600">${key}</p>
-                        </div>
-                        <div class="text-right">
-                            <p class="text-xs text-slate-400 font-bold mb-1">Status</p>
-                            ${badgeHTML}
-                        </div>
-                    </div>
-                    <div class="flex justify-between items-end mt-2 pt-3 border-t border-slate-100">
-                        <div>
-                            <p class="text-xs text-slate-400 font-bold mb-1">Tgl Kirim / Datang</p>
-                            <p class="text-xs font-medium text-slate-600 leading-relaxed">${displayDate}</p>
-                        </div>
-                        <button onclick="openDetailModal('${key.replace(/'/g, "\\'")}')" class="px-3 py-1.5 bg-indigo-50 text-indigo-600 rounded-lg text-xs font-bold hover:bg-indigo-100 transition">
-                            Cek Detail
-                        </button>
-                    </div>
-                `;
-                mobileBody.appendChild(card);
             });
 
             renderPagination(totalPages);
@@ -901,17 +924,12 @@
             renderTable();
         }
 
-        function openBillingModal() {
-            document.getElementById('billingModal').classList.remove('hidden');
-        }
-        function closeBillingModal() {
-            document.getElementById('billingModal').classList.add('hidden');
-        }
+        function openBillingModal() { document.getElementById('billingModal').classList.remove('hidden'); }
+        function closeBillingModal() { document.getElementById('billingModal').classList.add('hidden'); }
 
         function openVendorModal() {
             let container = document.getElementById('vendorListContainer');
             container.innerHTML = "";
-
             if (allVendors.size === 0) {
                 container.innerHTML = `<p class="text-sm text-slate-500 text-center py-4">Tidak ada data vendor.</p>`;
             } else {
@@ -920,9 +938,7 @@
                     btn.className = "flex items-center justify-between p-4 bg-white hover:bg-indigo-50 border border-slate-200 rounded-xl cursor-pointer transition shadow-sm group";
                     btn.innerHTML = `
                         <div class="flex items-center space-x-3">
-                            <div class="w-10 h-10 rounded-lg bg-indigo-100 text-indigo-600 flex items-center justify-center text-sm font-bold">
-                                <i class="fa-solid fa-building"></i>
-                            </div>
+                            <div class="w-10 h-10 rounded-lg bg-indigo-100 text-indigo-600 flex items-center justify-center text-sm font-bold"><i class="fa-solid fa-building"></i></div>
                             <span class="font-semibold text-slate-700 text-sm group-hover:text-indigo-700 transition-colors">${vendor}</span>
                         </div>
                         <span class="text-[10px] uppercase tracking-wider text-indigo-600 font-bold bg-indigo-100/60 px-3 py-1 rounded-md">Pilih <i class="fa-solid fa-arrow-right ml-1"></i></span>
@@ -938,10 +954,7 @@
             }
             document.getElementById('vendorModal').classList.remove('hidden');
         }
-
-        function closeVendorModal() {
-            document.getElementById('vendorModal').classList.add('hidden');
-        }
+        function closeVendorModal() { document.getElementById('vendorModal').classList.add('hidden'); }
 
         function openDetailModal(key) {
             let group = groupedData[key];
@@ -951,30 +964,15 @@
             document.getElementById('modalSubtitle').innerText = `PO: ${key} | Total ${group.items.length} item terdaftar.`;
 
             let banner = document.getElementById('modalBillingBanner');
-            if (group.billingStatus && group.billingStatus !== "-") {
+            // Banner billing di detail modal HANYA MUNCUL jika SUDAH LOGIN
+            if (isLoggedIn && group.billingStatus && group.billingStatus !== "-") {
                 banner.classList.remove('hidden');
                 if (group.isPaid) {
                     banner.className = "mb-4 rounded-xl p-4 border border-teal-200 bg-teal-50 flex items-center gap-3 text-teal-800";
-                    banner.innerHTML = `
-                        <div class="w-10 h-10 rounded-full bg-teal-200 text-teal-700 flex items-center justify-center text-xl shrink-0">
-                            <i class="fa-solid fa-check-circle"></i>
-                        </div>
-                        <div>
-                            <p class="text-xs font-bold text-teal-600 uppercase">Status Billing</p>
-                            <p class="text-lg font-extrabold">${group.billingStatus}</p>
-                        </div>
-                    `;
+                    banner.innerHTML = `<div class="w-10 h-10 rounded-full bg-teal-200 text-teal-700 flex items-center justify-center text-xl shrink-0"><i class="fa-solid fa-check-circle"></i></div><div><p class="text-xs font-bold text-teal-600 uppercase">Status Billing</p><p class="text-lg font-extrabold">${group.billingStatus}</p></div>`;
                 } else {
                     banner.className = "mb-4 rounded-xl p-4 border border-rose-200 bg-rose-50 flex items-center gap-3 text-rose-800";
-                    banner.innerHTML = `
-                        <div class="w-10 h-10 rounded-full bg-rose-200 text-rose-700 flex items-center justify-center text-xl shrink-0">
-                            <i class="fa-solid fa-clock"></i>
-                        </div>
-                        <div>
-                            <p class="text-xs font-bold text-rose-600 uppercase">Status Billing</p>
-                            <p class="text-lg font-extrabold">${group.billingStatus}</p>
-                        </div>
-                    `;
+                    banner.innerHTML = `<div class="w-10 h-10 rounded-full bg-rose-200 text-rose-700 flex items-center justify-center text-xl shrink-0"><i class="fa-solid fa-clock"></i></div><div><p class="text-xs font-bold text-rose-600 uppercase">Status Billing</p><p class="text-lg font-extrabold">${group.billingStatus}</p></div>`;
                 }
             } else {
                 banner.classList.add('hidden');
@@ -984,24 +982,16 @@
             modalBody.innerHTML = "";
 
             group.items.forEach(item => {
-                // Ambil status dari properti noReceive
                 let rStatus = getStatusData(item);
                 let displayStatus = rStatus ? rStatus : "-";
-                
-                // Klasifikasi warna
                 let classStr = classifyStatus(rStatus);
-                let badgeClass = "bg-amber-100 text-amber-700"; // Default Pending
+                let badgeClass = "bg-amber-100 text-amber-700"; 
                 
-                if (classStr === 'RECEIVED') {
-                    badgeClass = "bg-emerald-100 text-emerald-700";
-                } else if (classStr === 'PROGRESS') {
-                    badgeClass = "bg-blue-100 text-blue-700";
-                } else if (!rStatus) {
-                    displayStatus = "Belum Datang"; // Tampilan jika kosong
-                }
+                if (classStr === 'RECEIVED') badgeClass = "bg-emerald-100 text-emerald-700";
+                else if (classStr === 'PROGRESS') badgeClass = "bg-blue-100 text-blue-700";
+                else if (!rStatus) displayStatus = "Belum Datang"; 
 
                 let statusBadge = `<span class="px-2 py-1 rounded text-[11px] font-bold ${badgeClass} whitespace-nowrap">${displayStatus}</span>`;
-
                 let fDatang = formatTanggal(item.tglDatang);
                 let fKirim = formatTanggal(item.tglKirim);
                 let itemDate = "";
@@ -1013,7 +1003,7 @@
                 }
                 itemDate = itemDate || "-";
 
-                let tr = document.createElement('tr');
+                let tr = modalBody.insertRow();
                 tr.className = "hover:bg-slate-50 border-b border-slate-100 transition-colors";
                 tr.innerHTML = `
                     <td class="py-4 px-5 text-slate-800 font-semibold">${item.item}</td>
@@ -1023,23 +1013,17 @@
                     <td class="py-4 px-5">${statusBadge}</td>
                     <td class="py-4 px-5 text-slate-600 text-xs font-medium leading-relaxed whitespace-nowrap">${itemDate}</td>
                 `;
-                modalBody.appendChild(tr);
             });
-
             document.getElementById('detailModal').classList.remove('hidden');
         }
 
-        function closeDetailModal() {
-            document.getElementById('detailModal').classList.add('hidden');
-        }
+        function closeDetailModal() { document.getElementById('detailModal').classList.add('hidden'); }
 
         window.onclick = function(event) {
-            let detailModal = document.getElementById('detailModal');
-            let vendorModal = document.getElementById('vendorModal');
-            let billingModal = document.getElementById('billingModal');
-            if (event.target === detailModal) closeDetailModal();
-            if (event.target === vendorModal) closeVendorModal();
-            if (event.target === billingModal) closeBillingModal();
+            if (event.target === document.getElementById('detailModal')) closeDetailModal();
+            if (event.target === document.getElementById('vendorModal')) closeVendorModal();
+            if (event.target === document.getElementById('billingModal')) closeBillingModal();
+            if (event.target === document.getElementById('checkModal')) closeCheckModal();
         }
 
         document.addEventListener('DOMContentLoaded', fetchSheetData);
