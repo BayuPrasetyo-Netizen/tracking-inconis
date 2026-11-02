@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tracking PR & PO - Inconis</title>
+    <title>Dashboard Tracking PR & PO - Inconis</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
@@ -44,15 +44,31 @@
         .dot:nth-child(2) { animation-delay: -0.16s; }
         @keyframes bounce { 0%, 80%, 100% { transform: scale(0); } 40% { transform: scale(1); } }
 
-        .dark body { background-color: #0f172a; color: #e2e8f0; }
-        .dark .bg-watermark { background-image: none; }
-        .dark .bg-white { background-color: #1e293b !important; border-color: #334155 !important; }
-        .dark .bg-slate-50, .dark .bg-slate-100 { background-color: #0f172a !important; border-color: #334155 !important; }
-        .dark .text-slate-800, .dark .text-slate-700 { color: #f8fafc !important; }
-        .dark .text-slate-600, .dark .text-slate-500 { color: #94a3b8 !important; }
-        .dark .border-slate-200, .dark .border-slate-100 { border-color: #334155 !important; }
-        .dark #loadingOverlay { background-color: #0f172a; }
-        .dark #loadingOverlay h2 { color: #f8fafc; }
+        .app-sidebar {
+            background-color: #111827;
+            color: #9ca3af;
+        }
+        .sidebar-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 16px;
+            color: #9ca3af;
+            font-size: 14px;
+            font-weight: 500;
+            border-radius: 12px;
+            transition: all 0.2s ease;
+            cursor: pointer;
+            margin-bottom: 4px;
+        }
+        .sidebar-item:hover {
+            background-color: rgba(255, 255, 255, 0.05);
+            color: #f3f4f6;
+        }
+        .sidebar-item.active {
+            background-color: rgba(255, 255, 255, 0.1);
+            color: #ffffff;
+        }
     </style>
 </head>
 <body class="bg-slate-50 bg-watermark text-slate-800 min-h-screen flex flex-col relative">
@@ -64,7 +80,7 @@
             <div class="w-3 h-3 bg-amber-400 rounded-full dot"></div>
             <div class="w-3 h-3 bg-blue-500 rounded-full dot"></div>
         </div>
-        <h2 class="text-xl font-bold text-slate-800 mb-1" id="loadingText">Mengambil Data...</h2>
+        <h2 class="text-xl font-bold text-slate-800 mb-1">Mengambil Data...</h2>
     </div>
 
     <!-- LOGIN MODAL -->
@@ -81,175 +97,307 @@
         </div>
     </div>
 
-    <header class="bg-slate-900 text-white shadow-lg sticky top-0 z-40 border-b border-slate-800">
-        <div class="w-full px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
-            <div class="flex items-center space-x-4">
-                <div onclick="handleLogoClick()" class="w-14 h-14 rounded-xl bg-white p-2 flex items-center justify-center shadow-md overflow-hidden shrink-0 cursor-pointer select-none active:scale-95 transition">
-                    <img src="https://inconis.com/web/image/12573-c55c95e6/Inconis.png" alt="Logo Inconis" class="w-full h-full object-contain pointer-events-none">
+    <!-- MAIN APP WRAPPER WITH SIDEBAR -->
+    <div class="flex min-h-screen">
+        
+        <!-- SIDEBAR -->
+        <aside id="appSidebar" class="w-64 app-sidebar flex flex-col fixed inset-y-0 left-0 z-50 transform -translate-x-full lg:translate-x-0 transition-transform duration-300 border-r border-slate-800">
+            <!-- Header Sidebar dengan Logo yang Diperbesar (h-14 / h-16) -->
+            <div class="h-24 flex items-center justify-between px-6 border-b border-slate-800/80">
+                <div class="flex items-center space-x-3 cursor-pointer select-none py-2" onclick="handleLogoClick()">
+                    <img src="https://inconis.com/web/image/12573-c55c95e6/Inconis.png" alt="Inconis Logo" class="h-14 w-auto object-contain bg-white rounded-xl p-1.5 shadow-md">
                 </div>
-                <div>
-                    <h1 class="font-bold text-lg sm:text-xl leading-tight tracking-tight text-white">Dashboard Tracking PR & PO</h1>
-                    <p class="text-[11px] text-slate-400 font-medium mt-0.5">Inconis Purchasing Monitoring System</p>
-                </div>
-            </div>
-            
-            <div class="flex items-center space-x-3">
-                <button onclick="openCheckModal()" class="flex items-center space-x-2 bg-teal-600 hover:bg-teal-500 text-white px-4 py-2 rounded-xl text-sm font-medium transition shadow-sm active:scale-95">
-                    <i class="fa-solid fa-clipboard-check"></i>
-                    <span class="hidden sm:inline">Cek Status PO</span>
-                </button>
-                <button onclick="fetchSheetData()" class="hidden sm:flex items-center space-x-2 bg-indigo-600 hover:bg-indigo-500 text-white px-4 py-2 rounded-xl text-sm font-medium transition shadow-sm active:scale-95">
-                    <i class="fa-solid fa-rotate" id="syncIcon"></i>
-                    <span>Sinkronisasi</span>
-                </button>
-                <button onclick="logout()" id="logoutBtn" class="hidden bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-xl text-sm font-medium transition items-center gap-1.5">
-                    <i class="fa-solid fa-right-from-bracket"></i> Logout
+                <button onclick="toggleSidebar()" class="lg:hidden text-slate-400 hover:text-white">
+                    <i class="fa-solid fa-xmark text-xl"></i>
                 </button>
             </div>
-        </div>
-    </header>
 
-    <main class="w-full px-4 sm:px-6 lg:px-8 py-8 flex-grow space-y-6 relative z-10">
-        <div id="adminMenu" class="hidden bg-indigo-50 p-6 rounded-2xl border border-indigo-200 shadow-sm">
-            <h3 class="font-bold text-lg text-indigo-800 mb-4"><i class="fa-solid fa-shield-halved mr-2"></i>Menu Admin</h3>
-            <button onclick="openInputModal()" class="bg-indigo-600 text-white px-6 py-3 rounded-xl font-bold hover:bg-indigo-700 transition shadow-md flex items-center space-x-2">
-                <i class="fa-solid fa-box-open"></i>
-                <span>Input Barang Datang (Ceklis)</span>
-            </button>
-        </div>
+            <!-- Sidebar Navigation Links -->
+            <div class="flex-grow py-6 px-4 space-y-1 overflow-y-auto">
+                <a href="#" class="sidebar-item active" id="navMonitoring" onclick="switchView('monitoring')">
+                    <div class="flex items-center space-x-3">
+                        <i class="fa-solid fa-chart-pie text-base w-5 text-center"></i>
+                        <span>Monitoring</span>
+                    </div>
+                    <i class="fa-solid fa-chevron-right text-xs opacity-50"></i>
+                </a>
+                <a href="#" class="sidebar-item" id="navPembayaran" onclick="switchView('pembayaran')">
+                    <div class="flex items-center space-x-3">
+                        <i class="fa-solid fa-file-invoice-dollar text-base w-5 text-center"></i>
+                        <span>Pembayaran</span>
+                    </div>
+                    <i class="fa-solid fa-chevron-right text-xs opacity-50"></i>
+                </a>
+                <a href="#" class="sidebar-item" onclick="openCheckModal()">
+                    <div class="flex items-center space-x-3">
+                        <i class="fa-solid fa-clipboard-check text-base w-5 text-center text-teal-400"></i>
+                        <span>Cek Status PO</span>
+                    </div>
+                    <i class="fa-solid fa-chevron-right text-xs opacity-50"></i>
+                </a>
+                <a href="#" class="sidebar-item" id="navPurchase" onclick="switchView('purchase')">
+                    <div class="flex items-center space-x-3">
+                        <i class="fa-solid fa-cart-shopping text-base w-5 text-center"></i>
+                        <span>Purchase</span>
+                    </div>
+                    <i class="fa-solid fa-chevron-right text-xs opacity-50"></i>
+                </a>
+            </div>
+        </aside>
 
-        <!-- STATISTIK CARDS -->
-        <!-- Responsive Grid menyesuaikan jumlah kartu (5 jika belum login, 6 jika sudah login) -->
-        <div id="statsGrid" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4 transition-all">
-            <div onclick="filterByStatus('ALL')" class="bg-white p-4 sm:p-5 rounded-2xl shadow-sm border border-slate-200/60 cursor-pointer hover:-translate-y-1 hover:shadow-md transition-all duration-200 group">
-                <div class="flex flex-col sm:flex-row sm:items-center justify-between">
-                    <div>
-                        <p class="text-[10px] sm:text-[11px] font-bold text-slate-400 uppercase tracking-wider">Total PR / PO</p>
-                        <h3 class="text-2xl sm:text-3xl font-extrabold text-slate-800 mt-1" id="statTotal">0</h3>
-                    </div>
-                </div>
-            </div>
-             <div onclick="filterByStatus('RECEIVED')" class="bg-white p-4 sm:p-5 rounded-2xl shadow-sm border border-slate-200/60 cursor-pointer hover:-translate-y-1 hover:shadow-md transition-all duration-200 group">
-                <div class="flex flex-col sm:flex-row sm:items-center justify-between">
-                    <div>
-                        <p class="text-[10px] sm:text-[11px] font-bold text-slate-400 uppercase tracking-wider">Received</p>
-                        <h3 class="text-2xl sm:text-3xl font-extrabold text-emerald-600 mt-1" id="statReceived">0</h3>
-                    </div>
-                </div>
-            </div>
-             <div onclick="filterByStatus('PROGRESS')" class="bg-white p-4 sm:p-5 rounded-2xl shadow-sm border border-slate-200/60 cursor-pointer hover:-translate-y-1 hover:shadow-md transition-all duration-200 group">
-                <div class="flex flex-col sm:flex-row sm:items-center justify-between">
-                    <div>
-                        <p class="text-[10px] sm:text-[11px] font-bold text-slate-400 uppercase tracking-wider">Progress Kirim</p>
-                        <h3 class="text-2xl sm:text-3xl font-extrabold text-blue-600 mt-1" id="statProgress">0</h3>
-                    </div>
-                </div>
-            </div>
-             <div onclick="filterByStatus('PENDING')" class="bg-white p-4 sm:p-5 rounded-2xl shadow-sm border border-slate-200/60 cursor-pointer hover:-translate-y-1 hover:shadow-md transition-all duration-200 group">
-                <div class="flex flex-col sm:flex-row sm:items-center justify-between">
-                    <div>
-                        <p class="text-[10px] sm:text-[11px] font-bold text-slate-400 uppercase tracking-wider">Pending / Belum</p>
-                        <h3 class="text-2xl sm:text-3xl font-extrabold text-amber-600 mt-1" id="statPending">0</h3>
-                    </div>
-                </div>
-            </div>
+        <!-- CONTENT AREA -->
+        <div class="flex-grow flex flex-col lg:pl-64 transition-all">
             
-            <!-- KARTU BILLING (HIDDEN DEFAULT SEBELUM LOGIN) -->
-            <div id="billingStatCard" onclick="openBillingModal()" class="hidden bg-white p-4 sm:p-5 rounded-2xl shadow-sm border border-slate-200/60 cursor-pointer hover:-translate-y-1 hover:shadow-md transition-all duration-200 group">
-                <div class="flex flex-col sm:flex-row sm:items-center justify-between">
-                    <div>
-                        <p class="text-[10px] sm:text-[11px] font-bold text-slate-400 uppercase tracking-wider">Status Billing</p>
-                        <div class="flex items-baseline space-x-1 mt-1">
-                            <h3 class="text-2xl sm:text-3xl font-extrabold text-teal-600" id="statBillingPaid">0</h3>
-                            <span class="text-xs text-slate-500 font-medium">/ <span id="statBillingTotal">0</span></span>
+            <!-- TOP NAVBAR -->
+            <header class="bg-slate-900 text-white shadow-lg sticky top-0 z-40 border-b border-slate-800">
+                <div class="w-full px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+                    <div class="flex items-center space-x-4">
+                        <button onclick="toggleSidebar()" class="lg:hidden text-slate-300 hover:text-white p-2">
+                            <i class="fa-solid fa-bars text-xl"></i>
+                        </button>
+                        <div>
+                            <h1 id="pageTitle" class="font-bold text-lg sm:text-xl leading-tight tracking-tight text-white">Dashboard Monitoring Vendor</h1>
+                            <p class="text-[11px] text-slate-400 font-medium mt-0.5">Inconis Purchasing Monitoring System</p>
+                        </div>
+                    </div>
+                    
+                    <div class="flex items-center space-x-3">
+                        <!-- Tombol Sinkronisasi -->
+                        <button onclick="fetchSheetData()" class="hidden sm:flex items-center space-x-2 bg-indigo-600 hover:bg-indigo-500 text-white px-4 py-2 rounded-xl text-sm font-medium transition shadow-sm active:scale-95">
+                            <i class="fa-solid fa-rotate" id="syncIcon"></i>
+                            <span>Sinkronisasi</span>
+                        </button>
+
+                        <!-- Tombol Admin di Pojok Kanan Atas -->
+                        <button onclick="document.getElementById('loginModal').classList.remove('hidden')" class="flex items-center space-x-2 bg-slate-800 hover:bg-slate-700 text-white px-4 py-2 rounded-xl text-sm font-medium transition border border-slate-700 shadow-sm active:scale-95">
+                            <i class="fa-solid fa-user-shield text-indigo-400"></i>
+                            <span>Admin</span>
+                        </button>
+
+                        <button onclick="logout()" id="logoutBtn" class="hidden bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-xl text-sm font-medium transition items-center gap-1.5">
+                            <i class="fa-solid fa-right-from-bracket"></i> Logout
+                        </button>
+                    </div>
+                </div>
+            </header>
+
+            <!-- MAIN CONTENT AREA -->
+            <main class="w-full px-4 sm:px-6 lg:px-8 py-8 flex-grow space-y-6 relative z-10">
+                
+                <!-- VIEW 1: MONITORING -->
+                <div id="viewMonitoring" class="space-y-6">
+                    <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4">
+                        <div class="bg-white p-4 sm:p-5 rounded-2xl shadow-sm border border-slate-200/60">
+                            <p class="text-[10px] sm:text-[11px] font-bold text-slate-400 uppercase tracking-wider">Total PR / PO</p>
+                            <h3 class="text-2xl sm:text-3xl font-extrabold text-slate-800 mt-1" id="mStatTotal">0</h3>
+                        </div>
+                        <div class="bg-white p-4 sm:p-5 rounded-2xl shadow-sm border border-slate-200/60">
+                            <p class="text-[10px] sm:text-[11px] font-bold text-slate-400 uppercase tracking-wider">Received</p>
+                            <h3 class="text-2xl sm:text-3xl font-extrabold text-emerald-600 mt-1" id="mStatReceived">0</h3>
+                        </div>
+                        <div class="bg-white p-4 sm:p-5 rounded-2xl shadow-sm border border-slate-200/60">
+                            <p class="text-[10px] sm:text-[11px] font-bold text-slate-400 uppercase tracking-wider">Progress Kirim</p>
+                            <h3 class="text-2xl sm:text-3xl font-extrabold text-blue-600 mt-1" id="mStatProgress">0</h3>
+                        </div>
+                        <div class="bg-white p-4 sm:p-5 rounded-2xl shadow-sm border border-slate-200/60">
+                            <p class="text-[10px] sm:text-[11px] font-bold text-slate-400 uppercase tracking-wider">Pending / Belum</p>
+                            <h3 class="text-2xl sm:text-3xl font-extrabold text-amber-500 mt-1" id="mStatPending">0</h3>
+                        </div>
+                        <div class="bg-white p-4 sm:p-5 rounded-2xl shadow-sm border border-slate-200/60">
+                            <p class="text-[10px] sm:text-[11px] font-bold text-slate-400 uppercase tracking-wider">Total Vendor</p>
+                            <h3 class="text-2xl sm:text-3xl font-extrabold text-purple-600 mt-1" id="mStatVendor">0</h3>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                        <div class="lg:col-span-4 bg-white p-6 rounded-2xl shadow-sm border border-slate-200/60 flex flex-col items-center justify-center text-center">
+                            <h3 class="font-bold text-slate-800 text-base mb-4 w-full text-left"><i class="fa-solid fa-chart-pie text-indigo-600 mr-2"></i>Distribusi Status Pesanan</h3>
+                            <div class="relative w-44 h-44 flex items-center justify-center my-2">
+                                <svg class="w-full h-full transform -rotate-90" viewBox="0 0 36 36">
+                                    <path class="text-slate-100" stroke-width="4" stroke="currentColor" fill="none" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"></path>
+                                    <path id="donutPending" class="text-amber-500 transition-all duration-1000" stroke-dasharray="0, 100" stroke-width="4" stroke-linecap="round" stroke="currentColor" fill="none" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"></path>
+                                    <path id="donutProgress" class="text-blue-500 transition-all duration-1000" stroke-dasharray="0, 100" stroke-width="4" stroke-linecap="round" stroke="currentColor" fill="none" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"></path>
+                                    <path id="donutReceived" class="text-emerald-500 transition-all duration-1000" stroke-dasharray="0, 100" stroke-width="4" stroke-linecap="round" stroke="currentColor" fill="none" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"></path>
+                                </svg>
+                                <div class="absolute flex flex-col items-center">
+                                    <span class="text-2xl font-extrabold text-slate-800" id="donutTotalPO">0</span>
+                                    <span class="text-[10px] text-slate-400 font-bold uppercase">TOTAL PO</span>
+                                </div>
+                            </div>
+                            <div class="flex justify-center gap-3 mt-4 text-xs font-semibold text-slate-600 flex-wrap">
+                                <div class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block"></span> Received (<span id="dReceived">0</span>)</div>
+                                <div class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full bg-blue-500 inline-block"></span> Progress (<span id="dProgress">0</span>)</div>
+                                <div class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block"></span> Pending (<span id="dPending">0</span>)</div>
+                            </div>
+                        </div>
+
+                        <div class="lg:col-span-8 bg-white p-6 rounded-2xl shadow-sm border border-slate-200/60 flex flex-col">
+                            <div class="flex items-center justify-between mb-4">
+                                <h3 class="font-bold text-slate-800 text-base"><i class="fa-solid fa-building text-purple-600 mr-2"></i>Daftar Vendor Aktif & Status Pesanan</h3>
+                                <div class="flex items-center gap-3 text-[11px] font-semibold text-slate-500">
+                                    <span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-emerald-500"></span> Received</span>
+                                    <span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-blue-500"></span> Progress</span>
+                                    <span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-amber-500"></span> Pending</span>
+                                </div>
+                            </div>
+                            <div class="overflow-y-auto max-h-[360px] space-y-3 pr-2" id="monitoringVendorList">
+                                <p class="text-xs text-slate-400 text-center py-8">Memuat data vendor...</p>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
 
-             <div onclick="openVendorModal()" class="bg-white p-4 sm:p-5 rounded-2xl shadow-sm border border-slate-200/60 cursor-pointer hover:-translate-y-1 hover:shadow-md transition-all duration-200 group">
-                <div class="flex flex-col sm:flex-row sm:items-center justify-between">
-                    <div>
-                        <p class="text-[10px] sm:text-[11px] font-bold text-slate-400 uppercase tracking-wider">Total Vendor</p>
-                        <h3 class="text-2xl sm:text-3xl font-extrabold text-purple-600 mt-1" id="statVendor">0</h3>
+                <!-- VIEW 2: PEMBAYARAN -->
+                <div id="viewPembayaran" class="space-y-6 hidden">
+                    <div class="bg-white rounded-2xl shadow-sm border border-slate-200/60 overflow-hidden">
+                        <div class="p-6 border-b border-slate-100 flex items-center justify-between">
+                            <div>
+                                <h2 class="font-bold text-lg text-slate-800"><i class="fa-solid fa-file-invoice-dollar text-teal-600 mr-2"></i>Data Pembayaran & Billing</h2>
+                                <p class="text-xs text-slate-500 mt-0.5">Sinkronisasi langsung dari Sheet Pembayaran</p>
+                            </div>
+                            <button onclick="loadPembayaranData()" class="bg-teal-600 hover:bg-teal-700 text-white px-4 py-2 rounded-xl text-xs font-bold transition">
+                                <i class="fa-solid fa-rotate mr-1.5"></i> Refresh Data
+                            </button>
+                        </div>
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left border-collapse">
+                                <thead class="bg-slate-50 border-b border-slate-200 text-slate-500 text-[11px] uppercase tracking-wider">
+                                    <tr>
+                                        <th class="py-4 px-5">No PR</th>
+                                        <th class="py-4 px-5">No PO</th>
+                                        <th class="py-4 px-5">Vendor</th>
+                                        <th class="py-4 px-5">Billing Status</th>
+                                        <th class="py-4 px-5">Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="pembayaranTableBody" class="divide-y divide-slate-100 text-sm bg-white">
+                                    <tr><td colspan="5" class="py-8 text-center text-slate-400">Tekan Refresh untuk memuat data pembayaran.</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                 </div>
-            </div>
-        </div>
 
-        <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-200/60 flex flex-col sm:flex-row items-center justify-between gap-4">
-            <div class="relative w-full sm:w-[500px]">
-                <span class="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none text-slate-400">
-                    <i class="fa-solid fa-magnifying-glass"></i>
-                </span>
-                <input type="text" id="searchInput" oninput="handleSearch()" placeholder="Cari No PR, PO (Pisahkan dengan koma)..." class="w-full pl-11 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white transition placeholder:text-slate-400">
-            </div>
+                <!-- VIEW 3: PURCHASE -->
+                <div id="viewPurchase" class="space-y-6 hidden">
+                    <div id="adminMenu" class="hidden bg-indigo-50 p-6 rounded-2xl border border-indigo-200 shadow-sm space-y-4">
+                        <h3 class="font-bold text-lg text-indigo-800"><i class="fa-solid fa-shield-halved mr-2"></i>Menu Admin</h3>
+                        <button onclick="openInputModal()" class="bg-indigo-600 text-white px-6 py-3 rounded-xl font-bold hover:bg-indigo-700 transition shadow-md flex items-center space-x-2">
+                            <i class="fa-solid fa-box-open"></i>
+                            <span>Input Barang Datang (Ceklis)</span>
+                        </button>
+                    </div>
 
-            <div class="flex items-center space-x-3 w-full sm:w-auto justify-between sm:justify-end">
-                <label class="text-xs font-bold text-slate-500 uppercase tracking-wider hidden sm:block">Status:</label>
-                <select id="statusFilter" onchange="handleFilterChange()" class="w-full sm:w-auto bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-sm font-medium text-slate-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white transition cursor-pointer">
-                    <option value="ALL">Semua Status</option>
-                    <option value="RECEIVED">Sudah Received</option>
-                    <option value="PROGRESS">Progress Kirim</option>
-                    <option value="PENDING">Belum Datang</option>
-                    <!-- Opsi filter billing disembunyikan sebelum login -->
-                    <option value="BILLING_PAID" class="billing-option hidden">Sudah Lunas (Billing)</option>
-                    <option value="BILLING_UNPAID" class="billing-option hidden">Belum Lunas (Billing)</option>
-                </select>
-            </div>
-        </div>
+                    <div id="statsGrid" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4 transition-all">
+                        <div onclick="filterByStatus('ALL')" class="bg-white p-4 sm:p-5 rounded-2xl shadow-sm border border-slate-200/60 cursor-pointer hover:-translate-y-1 transition-all">
+                            <p class="text-[10px] sm:text-[11px] font-bold text-slate-400 uppercase tracking-wider">Total PR / PO</p>
+                            <h3 class="text-2xl sm:text-3xl font-extrabold text-slate-800 mt-1" id="statTotal">0</h3>
+                        </div>
+                         <div onclick="filterByStatus('RECEIVED')" class="bg-white p-4 sm:p-5 rounded-2xl shadow-sm border border-slate-200/60 cursor-pointer hover:-translate-y-1 transition-all">
+                            <p class="text-[10px] sm:text-[11px] font-bold text-slate-400 uppercase tracking-wider">Received</p>
+                            <h3 class="text-2xl sm:text-3xl font-extrabold text-emerald-600 mt-1" id="statReceived">0</h3>
+                        </div>
+                         <div onclick="filterByStatus('PROGRESS')" class="bg-white p-4 sm:p-5 rounded-2xl shadow-sm border border-slate-200/60 cursor-pointer hover:-translate-y-1 transition-all">
+                            <p class="text-[10px] sm:text-[11px] font-bold text-slate-400 uppercase tracking-wider">Progress Kirim</p>
+                            <h3 class="text-2xl sm:text-3xl font-extrabold text-blue-600 mt-1" id="statProgress">0</h3>
+                        </div>
+                         <div onclick="filterByStatus('PENDING')" class="bg-white p-4 sm:p-5 rounded-2xl shadow-sm border border-slate-200/60 cursor-pointer hover:-translate-y-1 transition-all">
+                            <p class="text-[10px] sm:text-[11px] font-bold text-slate-400 uppercase tracking-wider">Pending / Belum</p>
+                            <h3 class="text-2xl sm:text-3xl font-extrabold text-amber-500 mt-1" id="statPending">0</h3>
+                        </div>
+                        <div id="billingStatCard" onclick="openBillingModal()" class="hidden bg-white p-4 sm:p-5 rounded-2xl shadow-sm border border-slate-200/60 cursor-pointer hover:-translate-y-1 transition-all">
+                            <p class="text-[10px] sm:text-[11px] font-bold text-slate-400 uppercase tracking-wider">Status Billing</p>
+                            <div class="flex items-baseline space-x-1 mt-1">
+                                <h3 class="text-2xl sm:text-3xl font-extrabold text-teal-600" id="statBillingPaid">0</h3>
+                                <span class="text-xs text-slate-500 font-medium">/ <span id="statBillingTotal">0</span></span>
+                            </div>
+                        </div>
+                         <div onclick="openVendorModal()" class="bg-white p-4 sm:p-5 rounded-2xl shadow-sm border border-slate-200/60 cursor-pointer hover:-translate-y-1 transition-all">
+                            <p class="text-[10px] sm:text-[11px] font-bold text-slate-400 uppercase tracking-wider">Total Vendor</p>
+                            <h3 class="text-2xl sm:text-3xl font-extrabold text-purple-600 mt-1" id="statVendor">0</h3>
+                        </div>
+                    </div>
 
-        <div class="bg-white rounded-2xl shadow-sm border border-slate-200/60 overflow-hidden flex flex-col">
-            <div class="p-4 sm:p-6 border-b border-slate-100 flex items-center justify-between bg-white">
-                <h2 class="font-bold text-slate-800 text-base sm:text-lg">Rekapitulasi PR & PO</h2>
-                <span id="tableCount" class="text-[10px] sm:text-xs font-bold bg-indigo-50 text-indigo-700 px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg border border-indigo-100">Memuat data...</span>
-            </div>
+                    <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-200/60 flex flex-col sm:flex-row items-center justify-between gap-4">
+                        <div class="relative w-full sm:w-[500px]">
+                            <span class="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none text-slate-400">
+                                <i class="fa-solid fa-magnifying-glass"></i>
+                            </span>
+                            <input type="text" id="searchInput" oninput="handleSearch()" placeholder="Cari No PR, PO (Pisahkan dengan koma)..." class="w-full pl-11 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white transition placeholder:text-slate-400">
+                        </div>
 
-            <div class="hidden sm:block overflow-x-auto overflow-y-auto max-h-[70vh]">
-                <table class="w-full text-left border-collapse">
-                    <thead class="bg-slate-50 border-b border-slate-200 sticky top-0 z-10">
-                        <tr class="text-slate-500 text-[11px] uppercase tracking-wider">
-                            <th class="py-4 px-4 font-bold text-center w-12 whitespace-nowrap">No</th>
-                            <th class="py-4 px-4 font-bold whitespace-nowrap">No PR</th>
-                            <th class="py-4 px-4 font-bold whitespace-nowrap">No PO</th>
-                            <th class="py-4 px-4 font-bold min-w-[200px]">Vendor</th>
-                            <th class="py-4 px-4 font-bold min-w-[150px]">User</th>
-                            <th class="py-4 px-4 font-bold text-center whitespace-nowrap">Item</th>
-                            <th class="py-4 px-4 font-bold text-center min-w-[150px]">Tgl Kirim / Datang</th>
-                            <th class="py-4 px-4 font-bold whitespace-nowrap">Status</th>
-                            <th class="py-4 px-4 font-bold text-center whitespace-nowrap">Aksi</th>
-                        </tr>
-                    </thead>
-                    <tbody id="tableBody" class="divide-y divide-slate-100 text-sm bg-white"></tbody>
-                </table>
-            </div>
+                        <div class="flex items-center space-x-3 w-full sm:w-auto justify-between sm:justify-end">
+                            <label class="text-xs font-bold text-slate-500 uppercase tracking-wider hidden sm:block">Status:</label>
+                            <select id="statusFilter" onchange="handleFilterChange()" class="w-full sm:w-auto bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-sm font-medium text-slate-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white transition cursor-pointer">
+                                <option value="ALL">Semua Status</option>
+                                <option value="RECEIVED">Sudah Received</option>
+                                <option value="PROGRESS">Progress Kirim</option>
+                                <option value="PENDING">Belum Datang</option>
+                                <option value="BILLING_PAID" class="billing-option hidden">Sudah Lunas (Billing)</option>
+                                <option value="BILLING_UNPAID" class="billing-option hidden">Belum Lunas (Billing)</option>
+                            </select>
+                        </div>
+                    </div>
 
-            <div id="mobileCardBody" class="block sm:hidden divide-y divide-slate-100 bg-white"></div>
+                    <div class="bg-white rounded-2xl shadow-sm border border-slate-200/60 overflow-hidden flex flex-col">
+                        <div class="p-4 sm:p-6 border-b border-slate-100 flex items-center justify-between bg-white">
+                            <h2 class="font-bold text-slate-800 text-base sm:text-lg">Rekapitulasi PR & PO</h2>
+                            <span id="tableCount" class="text-[10px] sm:text-xs font-bold bg-indigo-50 text-indigo-700 px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg border border-indigo-100">Memuat data...</span>
+                        </div>
 
-            <div class="p-4 sm:p-5 border-t border-slate-100 bg-slate-50/50 flex flex-col sm:flex-row items-center justify-between gap-4">
-                <div class="flex items-center space-x-2 w-full sm:w-auto justify-between sm:justify-start">
-                    <span class="text-xs text-slate-500 font-medium">Tampilkan:</span>
-                    <select id="rowsPerPage" onchange="changeRowsPerPage()" class="bg-white border border-slate-300 rounded-lg px-3 py-1.5 text-xs font-bold text-slate-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 cursor-pointer shadow-sm">
-                        <option value="10">10</option>
-                        <option value="50">50</option>
-                        <option value="70">70</option>
-                        <option value="100" selected>100</option>
-                    </select>
-                    <span class="text-xs text-slate-500 font-medium">baris</span>
+                        <div class="hidden sm:block overflow-x-auto overflow-y-auto max-h-[70vh]">
+                            <table class="w-full text-left border-collapse">
+                                <thead class="bg-slate-50 border-b border-slate-200 sticky top-0 z-10">
+                                    <tr class="text-slate-500 text-[11px] uppercase tracking-wider">
+                                        <th class="py-4 px-4 font-bold text-center w-12 whitespace-nowrap">No</th>
+                                        <th class="py-4 px-4 font-bold whitespace-nowrap">No PR</th>
+                                        <th class="py-4 px-4 font-bold whitespace-nowrap">No PO</th>
+                                        <th class="py-4 px-4 font-bold min-w-[200px]">Vendor</th>
+                                        <th class="py-4 px-4 font-bold min-w-[150px]">User</th>
+                                        <th class="py-4 px-4 font-bold text-center whitespace-nowrap">Item</th>
+                                        <th class="py-4 px-4 font-bold text-center min-w-[150px]">Tgl Kirim / Datang</th>
+                                        <th class="py-4 px-4 font-bold whitespace-nowrap">Status</th>
+                                        <th class="py-4 px-4 font-bold text-center whitespace-nowrap">Aksi</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="tableBody" class="divide-y divide-slate-100 text-sm bg-white"></tbody>
+                            </table>
+                        </div>
+
+                        <div id="mobileCardBody" class="block sm:hidden divide-y divide-slate-100 bg-white"></div>
+
+                        <div class="p-4 sm:p-5 border-t border-slate-100 bg-slate-50/50 flex flex-col sm:flex-row items-center justify-between gap-4">
+                            <div class="flex items-center space-x-2 w-full sm:w-auto justify-between sm:justify-start">
+                                <span class="text-xs text-slate-500 font-medium">Tampilkan:</span>
+                                <select id="rowsPerPage" onchange="changeRowsPerPage()" class="bg-white border border-slate-300 rounded-lg px-3 py-1.5 text-xs font-bold text-slate-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 cursor-pointer shadow-sm">
+                                    <option value="10">10</option>
+                                    <option value="50">50</option>
+                                    <option value="70">70</option>
+                                    <option value="100" selected>100</option>
+                                </select>
+                                <span class="text-xs text-slate-500 font-medium">baris</span>
+                            </div>
+                            <div class="flex items-center space-x-2" id="paginationControls"></div>
+                        </div>
+
+                        <div id="emptyState" class="hidden py-20 text-center bg-white">
+                            <div class="w-20 h-20 bg-slate-50 text-slate-300 rounded-full flex items-center justify-center mx-auto text-3xl mb-4">
+                                <i class="fa-solid fa-folder-open"></i>
+                            </div>
+                            <p class="text-slate-500 font-medium">Tidak ada data yang ditemukan.</p>
+                        </div>
+                    </div>
                 </div>
-                <div class="flex items-center space-x-2" id="paginationControls"></div>
-            </div>
 
-            <div id="emptyState" class="hidden py-20 text-center bg-white">
-                <div class="w-20 h-20 bg-slate-50 text-slate-300 rounded-full flex items-center justify-center mx-auto text-3xl mb-4">
-                    <i class="fa-solid fa-folder-open"></i>
-                </div>
-                <p class="text-slate-500 font-medium">Tidak ada data yang ditemukan.</p>
-            </div>
+            </main>
+
+            <footer class="bg-white border-t border-slate-200 mt-12 py-6 text-center text-xs text-slate-400 relative z-10">
+                <p>&copy; 2024 Dashboard Tracking Purchase &middot; Inconis</p>
+            </footer>
         </div>
-    </main>
+    </div>
 
-    <!-- MODAL CEK STATUS / SHEET PEMBAYARAN -->
+    <!-- MODAL CEK STATUS -->
     <div id="checkModal" class="fixed inset-0 bg-slate-900/70 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
         <div class="bg-white rounded-2xl shadow-2xl max-w-4xl w-full max-h-[90vh] flex flex-col overflow-hidden">
             <div class="p-5 border-b border-slate-100 flex items-center justify-between bg-white">
@@ -370,7 +518,6 @@
             </div>
             
             <div class="p-4 sm:p-6 overflow-y-auto flex-grow bg-slate-50/50">
-                <!-- Banner Billing di Detail Modal juga disembunyikan jika belum login -->
                 <div id="modalBillingBanner" class="hidden mb-4 rounded-xl p-4 border flex items-center gap-3"></div>
                 <div class="overflow-x-auto border border-slate-200 rounded-xl bg-white shadow-sm">
                     <table class="w-full text-left text-sm min-w-[600px]">
@@ -413,21 +560,79 @@
         </div>
     </div>
 
-    <footer class="bg-white border-t border-slate-200 mt-12 py-6 text-center text-xs text-slate-400 relative z-10">
-        <p>&copy; 2024 Dashboard Tracking Purchase &middot; Inconis</p>
-    </footer>
-
     <script>
         const API_URL = "https://script.google.com/macros/s/AKfycbwEDWMcYTVePKpa3JkGusA1nKOnomTlLL0-I2FgtxhUwHkDwyZZzGZCMZoSdibveZNPmA/exec";
         
-        let rawData = [];      
+        let rawData = [];     
         let groupedData = {};  
         let allVendors = new Set();
         let currentFilterStatus = 'ALL';
         let selectedPOItems = []; 
         let currentPage = 1;
         let rowsPerPage = 100;
-        let isLoggedIn = false; // Status login default false
+        let isLoggedIn = false;
+
+        function toggleSidebar() {
+            const sidebar = document.getElementById('appSidebar');
+            sidebar.classList.toggle('-translate-x-full');
+        }
+
+        function switchView(viewName) {
+            document.getElementById('viewMonitoring').classList.add('hidden');
+            document.getElementById('viewPembayaran').classList.add('hidden');
+            document.getElementById('viewPurchase').classList.add('hidden');
+
+            document.getElementById('navMonitoring').classList.remove('active');
+            document.getElementById('navPembayaran').classList.remove('active');
+            document.getElementById('navPurchase').classList.remove('active');
+
+            if (viewName === 'monitoring') {
+                document.getElementById('viewMonitoring').classList.remove('hidden');
+                document.getElementById('navMonitoring').classList.add('active');
+                document.getElementById('pageTitle').innerText = "Dashboard Monitoring Vendor";
+                renderMonitoringAnalytics();
+            } else if (viewName === 'pembayaran') {
+                document.getElementById('viewPembayaran').classList.remove('hidden');
+                document.getElementById('navPembayaran').classList.add('active');
+                document.getElementById('pageTitle').innerText = "Data Pembayaran & Billing";
+                loadPembayaranData();
+            } else if (viewName === 'purchase') {
+                document.getElementById('viewPurchase').classList.remove('hidden');
+                document.getElementById('navPurchase').classList.add('active');
+                document.getElementById('pageTitle').innerText = "Dashboard Tracking PR & PO";
+            }
+            if (window.innerWidth < 1024) toggleSidebar();
+        }
+
+        async function loadPembayaranData() {
+            const tbody = document.getElementById('pembayaranTableBody');
+            tbody.innerHTML = `<tr><td colspan="5" class="py-8 text-center text-teal-600 font-bold"><i class="fa-solid fa-spinner fa-spin mr-2"></i>Memuat data dari Sheet Pembayaran...</td></tr>`;
+            try {
+                const response = await fetch(`${API_URL}?sheet=pembayaran`);
+                const data = await response.json();
+                tbody.innerHTML = "";
+                if (data.length === 0) {
+                    tbody.innerHTML = `<tr><td colspan="5" class="py-8 text-center text-slate-400">Tidak ada data pembayaran.</td></tr>`;
+                    return;
+                }
+                data.forEach(p => {
+                    let billingText = isLoggedIn ? (p.billing || '-') : '******';
+                    let tr = document.createElement('tr');
+                    tr.className = "hover:bg-slate-50 border-b border-slate-100";
+                    tr.innerHTML = `
+                        <td class="py-3 px-5 text-indigo-600 font-semibold">${p.pr || '-'}</td>
+                        <td class="py-3 px-5 text-indigo-600 font-semibold">${p.po || '-'}</td>
+                        <td class="py-3 px-5 text-slate-700">${p.vendor || '-'}</td>
+                        <td class="py-3 px-5 text-slate-600 font-medium">${billingText}</td>
+                        <td class="py-3 px-5 text-slate-700">${p.status || '-'}</td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+            } catch (err) {
+                console.error(err);
+                tbody.innerHTML = `<tr><td colspan="5" class="py-8 text-center text-rose-500">Gagal memuat data pembayaran.</td></tr>`;
+            }
+        }
 
         function handleEnter(event, actionName) {
             if (event.key === 'Enter') {
@@ -464,14 +669,8 @@
         function formatTanggal(tgl) {
             if (!tgl || tgl === "-" || String(tgl).trim() === "") return "-";
             let str = String(tgl).trim();
-            if (str.includes('GMT') || str.includes('Waktu Indonesia') || str.match(/^[A-Za-z]{3}\s[A-Za-z]{3}/)) {
-                let d = new Date(str);
-                if (!isNaN(d.getTime())) return d.toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' });
-            }
-            if (/^\d{4}-\d{2}-\d{2}/.test(str)) {
-                let d = new Date(str);
-                if (!isNaN(d.getTime())) return d.toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' });
-            }
+            let d = new Date(str);
+            if (!isNaN(d.getTime())) return d.toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' });
             return str;
         }
 
@@ -501,8 +700,7 @@
                     tr.className = "hover:bg-slate-50 border-b border-slate-100 text-xs";
                     
                     if (match) {
-                        // Sembunyikan kolom billing di hasil cek jika belum login
-                        let billingCell = isLoggedIn ? `<td class="py-3 px-3 text-slate-600 font-semibold">${match.billing || '-'}</td>` : `<td class="py-3 px-3 text-slate-400 italic">********</td>`;
+                        let billingCell = isLoggedIn ? `<td class="py-3 px-3 text-slate-600 font-semibold">${match.billing || '-'}</td>` : `<td class="py-3 px-3 text-slate-400 italic">******</td>`;
                         tr.innerHTML = `
                             <td class="py-3 px-3 font-semibold text-slate-800">${q}</td>
                             <td class="py-3 px-3 text-indigo-600 font-medium">${match.pr || '-'}</td>
@@ -548,10 +746,13 @@
                 document.getElementById('logoutBtn').classList.remove('hidden');
                 document.getElementById('logoutBtn').classList.add('flex');
                 
-                // Tampilkan kartu & opsi filter billing setelah login
                 document.getElementById('billingStatCard').classList.remove('hidden');
                 document.getElementById('statsGrid').className = "grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 sm:gap-4 transition-all";
                 document.querySelectorAll('.billing-option').forEach(el => el.classList.remove('hidden'));
+                
+                if (!document.getElementById('viewPembayaran').classList.contains('hidden')) {
+                    loadPembayaranData();
+                }
                 
                 alert('Berhasil Login sebagai Admin!');
             } else {
@@ -565,16 +766,15 @@
             document.getElementById('logoutBtn').classList.add('hidden');
             document.getElementById('logoutBtn').classList.remove('flex');
             
-            // Sembunyikan kembali kartu & opsi filter billing saat logout
             document.getElementById('billingStatCard').classList.add('hidden');
             document.getElementById('statsGrid').className = "grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4 transition-all";
             document.querySelectorAll('.billing-option').forEach(el => el.classList.add('hidden'));
             
-            // Reset filter jika sebelumnya di mode billing
-            if (currentFilterStatus.includes('BILLING')) {
-                filterByStatus('ALL');
+            if (currentFilterStatus.includes('BILLING')) filterByStatus('ALL');
+            
+            if (!document.getElementById('viewPembayaran').classList.contains('hidden')) {
+                loadPembayaranData();
             }
-
             alert('Berhasil Logout');
         }
 
@@ -584,8 +784,7 @@
             document.getElementById('receiveInputContainer').classList.add('hidden');
             document.getElementById('searchPOModal').value = '';
             document.getElementById('poItemsBody').innerHTML = '';
-            let today = new Date().toISOString().split('T')[0];
-            document.getElementById('inputTglDatang').value = today;
+            document.getElementById('inputTglDatang').value = new Date().toISOString().split('T')[0];
         }
 
         function closeInputModal() { document.getElementById('inputModal').classList.add('hidden'); }
@@ -595,11 +794,8 @@
             if (!query) return alert("Ketik No PO dulu!");
 
             selectedPOItems = rawData.filter(row => String(row.noPO).toUpperCase() === query);
-            
             if (selectedPOItems.length === 0) {
-                alert("PO tidak ditemukan di data!");
-                document.getElementById('poItemsContainer').classList.add('hidden');
-                document.getElementById('receiveInputContainer').classList.add('hidden');
+                alert("PO tidak ditemukan!");
                 return;
             }
 
@@ -620,8 +816,7 @@
         }
 
         function toggleAll(source) {
-            const checkboxes = document.querySelectorAll('.item-checkbox');
-            checkboxes.forEach(cb => cb.checked = source.checked);
+            document.querySelectorAll('.item-checkbox').forEach(cb => cb.checked = source.checked);
         }
 
         function simpanBarangDatang() {
@@ -631,43 +826,20 @@
             const checkboxes = document.querySelectorAll('.item-checkbox:checked');
             if (checkboxes.length === 0) return alert("Pilih minimal 1 item!");
 
-            const btn = document.getElementById('btnSimpan');
-            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-2"></i>Menyimpan...';
-            btn.disabled = true;
-
             let itemsToSave = [];
             checkboxes.forEach(cb => {
-                const index = cb.getAttribute('data-index');
-                const item = selectedPOItems[index];
+                const item = selectedPOItems[cb.getAttribute('data-index')];
                 itemsToSave.push({
-                    noPR: item.noPR,
-                    noPO: item.noPO,
-                    user: item.user,
-                    vendor: item.vendor,
-                    item: item.item,
-                    ukuran: item.ukuran,
-                    qty: item.qty,
-                    tglDatang: tglDatang,
-                    tglKirim: item.tglKirim || "-", 
-                    noDO: item.noDO || "-",
-                    noReceive: "-"
+                    noPR: item.noPR, noPO: item.noPO, user: item.user, vendor: item.vendor,
+                    item: item.item, ukuran: item.ukuran, qty: item.qty,
+                    tglDatang: tglDatang, tglKirim: item.tglKirim || "-", noDO: item.noDO || "-", noReceive: "-"
                 });
             });
 
-            fetch(API_URL, {
-                method: 'POST',
-                body: JSON.stringify(itemsToSave)
-            }).then(res => {
-                alert("Berhasil disimpan ke Sheet Barang Datang!");
+            fetch(API_URL, { method: 'POST', body: JSON.stringify(itemsToSave) }).then(() => {
+                alert("Berhasil disimpan!");
                 closeInputModal();
-                fetchSheetData(); 
-                btn.innerHTML = '<i class="fa-solid fa-save mr-2"></i>Simpan ke Sheet Barang Datang';
-                btn.disabled = false;
-            }).catch(err => {
-                console.error(err);
-                alert("Gagal menyimpan data.");
-                btn.innerHTML = '<i class="fa-solid fa-save mr-2"></i>Simpan ke Sheet Barang Datang';
-                btn.disabled = false;
+                fetchSheetData();
             });
         }
 
@@ -685,76 +857,60 @@
             }
         }
 
+        function normalizeVendorName(v) {
+            if (!v) return "-";
+            let clean = String(v).trim();
+            if (clean.toUpperCase() === "WAHANA SAFETY INDONESIA" || clean.toUpperCase() === "PT. WAHANA SAFETY INDONESIA") {
+                return "PT. Wahana Safety Indonesia";
+            }
+            return clean;
+        }
+
         function processAndRenderData() {
             groupedData = {};
             allVendors.clear();
 
             rawData.forEach(row => {
                 let noPO = row.noPO || "-";
-                let vendor = row.vendor || "-";
-                
+                let vendor = normalizeVendorName(row.vendor);
+                row.vendor = vendor; 
+
                 if (vendor !== "-" && vendor !== "") allVendors.add(vendor);
 
                 if (!groupedData[noPO]) {
                     groupedData[noPO] = { 
-                        items: [], 
-                        allItemsCount: 0,
-                        receivedItemsCount: 0,
-                        progressItemsCount: 0,
-                        pendingItemsCount: 0,
-                        billingStatus: "-", 
-                        vendor: vendor, 
-                        noPR: row.noPR,
-                        tglTampil: []
+                        items: [], allItemsCount: 0, receivedItemsCount: 0, 
+                        progressItemsCount: 0, pendingItemsCount: 0, 
+                        billingStatus: "-", vendor: vendor, noPR: row.noPR, tglTampil: []
                     };
                 }
                 
                 groupedData[noPO].items.push(row);
                 groupedData[noPO].allItemsCount++;
 
-                let rStatus = getStatusData(row);
-                let statusClass = classifyStatus(rStatus);
-
-                if (statusClass === 'RECEIVED') {
-                    groupedData[noPO].receivedItemsCount++;
-                } else if (statusClass === 'PROGRESS') {
-                    groupedData[noPO].progressItemsCount++;
-                } else {
-                    groupedData[noPO].pendingItemsCount++;
-                }
+                let statusClass = classifyStatus(getStatusData(row));
+                if (statusClass === 'RECEIVED') groupedData[noPO].receivedItemsCount++;
+                else if (statusClass === 'PROGRESS') groupedData[noPO].progressItemsCount++;
+                else groupedData[noPO].pendingItemsCount++;
 
                 let bStatus = getBillingStatus(row);
                 if (bStatus) groupedData[noPO].billingStatus = bStatus;
 
-                let stringTanggal = "";
                 let fDatang = formatTanggal(row.tglDatang);
                 let fKirim = formatTanggal(row.tglKirim);
-
-                if (fDatang !== "-") stringTanggal += `<span class="opacity-70">Datang:</span> ${fDatang}`;
-                if (fKirim !== "-") {
-                    if (stringTanggal !== "") stringTanggal += `<br>`;
-                    stringTanggal += `<span class="opacity-70">Kirim:</span> ${fKirim}`;
-                }
-                if (stringTanggal !== "") groupedData[noPO].tglTampil.push(stringTanggal);
+                let strTgl = "";
+                if (fDatang !== "-") strTgl += `Datang: ${fDatang}`;
+                if (fKirim !== "-") strTgl += `<br>Kirim: ${fKirim}`;
+                if (strTgl) groupedData[noPO].tglTampil.push(strTgl);
             });
 
             let totalPO = Object.keys(groupedData).length;
-            let totalReceived = 0;
-            let totalProgress = 0;
-            let totalPending = 0;
-            let totalPaid = 0; 
+            let totalReceived = 0, totalProgress = 0, totalPending = 0, totalPaid = 0; 
 
             Object.values(groupedData).forEach(g => {
-                if (g.receivedItemsCount === g.allItemsCount) {
-                    g.statusGroup = 'RECEIVED';
-                    totalReceived++;
-                } else if (g.progressItemsCount > 0 || g.receivedItemsCount > 0) {
-                    g.statusGroup = 'PROGRESS';
-                    totalProgress++;
-                } else {
-                    g.statusGroup = 'PENDING';
-                    totalPending++;
-                }
+                if (g.receivedItemsCount === g.allItemsCount) { g.statusGroup = 'RECEIVED'; totalReceived++; }
+                else if (g.progressItemsCount > 0 || g.receivedItemsCount > 0) { g.statusGroup = 'PROGRESS'; totalProgress++; }
+                else { g.statusGroup = 'PENDING'; totalPending++; }
 
                 g.isPaid = isBillingPaid(g.billingStatus);
                 if (g.isPaid) totalPaid++;
@@ -765,12 +921,89 @@
             document.getElementById('statProgress').innerText = totalProgress;
             document.getElementById('statPending').innerText = totalPending;
             document.getElementById('statVendor').innerText = allVendors.size;
-
             document.getElementById('statBillingPaid').innerText = totalPaid;
             document.getElementById('statBillingTotal').innerText = totalPO;
 
-            currentPage = 1;
+            document.getElementById('mStatTotal').innerText = totalPO;
+            document.getElementById('mStatReceived').innerText = totalReceived;
+            document.getElementById('mStatProgress').innerText = totalProgress;
+            document.getElementById('mStatPending').innerText = totalPending;
+            document.getElementById('mStatVendor').innerText = allVendors.size;
+
             renderTable();
+            renderMonitoringAnalytics();
+        }
+
+        function renderMonitoringAnalytics() {
+            let totalPO = Object.keys(groupedData).length;
+            let recCount = parseInt(document.getElementById('mStatReceived').innerText) || 0;
+            let progCount = parseInt(document.getElementById('mStatProgress').innerText) || 0;
+            let pendCount = parseInt(document.getElementById('mStatPending').innerText) || 0;
+
+            document.getElementById('donutTotalPO').innerText = totalPO;
+            document.getElementById('dReceived').innerText = recCount;
+            document.getElementById('dProgress').innerText = progCount;
+            document.getElementById('dPending').innerText = pendCount;
+
+            if (totalPO > 0) {
+                let recPercent = (recCount / totalPO) * 100;
+                let progPercent = (progCount / totalPO) * 100;
+
+                document.getElementById('donutPending').setAttribute('stroke-dasharray', `100, 100`);
+                document.getElementById('donutProgress').setAttribute('stroke-dasharray', `${recPercent + progPercent}, 100`);
+                document.getElementById('donutReceived').setAttribute('stroke-dasharray', `${recPercent}, 100`);
+            }
+
+            let listContainer = document.getElementById('monitoringVendorList');
+            listContainer.innerHTML = "";
+            if (allVendors.size === 0) {
+                listContainer.innerHTML = `<p class="text-xs text-slate-400 text-center py-8">Belum ada vendor terdaftar.</p>`;
+                return;
+            }
+
+            Array.from(allVendors).sort().forEach(vendor => {
+                let vendorPOs = Object.values(groupedData).filter(g => g.vendor === vendor);
+                let totalVPO = vendorPOs.length;
+                let vRec = vendorPOs.filter(g => g.statusGroup === 'RECEIVED').length;
+                let vProg = vendorPOs.filter(g => g.statusGroup === 'PROGRESS').length;
+                let vPend = vendorPOs.filter(g => g.statusGroup === 'PENDING').length;
+
+                let pRec = totalVPO > 0 ? (vRec / totalVPO) * 100 : 0;
+                let pProg = totalVPO > 0 ? (vProg / totalVPO) * 100 : 0;
+                let pPend = totalVPO > 0 ? (vPend / totalVPO) * 100 : 0;
+
+                let itemEl = document.createElement('div');
+                itemEl.className = "p-4 bg-slate-50/80 hover:bg-indigo-50/40 border border-slate-200/80 rounded-xl cursor-pointer transition group shadow-sm";
+                itemEl.innerHTML = `
+                    <div class="flex items-center justify-between mb-2">
+                        <div class="flex items-center space-x-3">
+                            <div class="w-9 h-9 rounded-xl bg-indigo-100 text-indigo-600 flex items-center justify-center text-xs font-bold shadow-sm"><i class="fa-solid fa-building"></i></div>
+                            <div>
+                                <h4 class="font-bold text-slate-800 text-sm group-hover:text-indigo-700">${vendor}</h4>
+                                <p class="text-[11px] text-slate-500 mt-0.5">
+                                    <span class="text-emerald-600 font-semibold">${vRec} Received</span> &middot; 
+                                    <span class="text-blue-600 font-semibold">${vProg} Progress</span> &middot; 
+                                    <span class="text-amber-600 font-semibold">${vPend} Pending</span>
+                                </p>
+                            </div>
+                        </div>
+                        <div class="text-right">
+                            <span class="text-sm font-extrabold text-slate-800 bg-white px-3 py-1.5 rounded-xl border border-slate-200 shadow-sm">${totalVPO} PO</span>
+                        </div>
+                    </div>
+                    <div class="w-full bg-slate-200 h-2.5 rounded-full overflow-hidden flex shadow-inner">
+                        <div class="bg-emerald-500 h-full transition-all duration-500" style="width: ${pRec}%" title="Received: ${vRec}"></div>
+                        <div class="bg-blue-500 h-full transition-all duration-500" style="width: ${pProg}%" title="Progress: ${vProg}"></div>
+                        <div class="bg-amber-500 h-full transition-all duration-500" style="width: ${pPend}%" title="Pending: ${vPend}"></div>
+                    </div>
+                `;
+                itemEl.onclick = () => {
+                    document.getElementById('searchInput').value = vendor;
+                    switchView('purchase');
+                    handleSearch();
+                };
+                listContainer.appendChild(itemEl);
+            });
         }
 
         function renderTable() {
@@ -802,13 +1035,9 @@
                         return group.noPR.toLowerCase().includes(term) || 
                                key.toLowerCase().includes(term) ||
                                (group.vendor||"").toLowerCase().includes(term) ||
-                               Array.from(group.items).some(i => 
-                                   (i.item||"").toLowerCase().includes(term) || 
-                                   (i.user||"").toLowerCase().includes(term)
-                               );
+                               Array.from(group.items).some(i => (i.item||"").toLowerCase().includes(term) || (i.user||"").toLowerCase().includes(term));
                     });
                 }
-
                 return matchStatus && matchSearch;
             });
 
@@ -845,30 +1074,26 @@
 
                 let badgeHTML = "";
                 if (group.statusGroup === 'RECEIVED') {
-                    badgeHTML = `<span class="inline-flex items-center px-2.5 py-1 rounded-full text-[11px] font-semibold bg-emerald-100 text-emerald-700 whitespace-nowrap"><span class="w-1.5 h-1.5 rounded-full bg-emerald-500 mr-1.5"></span> Received</span>`;
+                    badgeHTML = `<span class="inline-flex items-center px-2.5 py-1 rounded-full text-[11px] font-semibold bg-emerald-100 text-emerald-700"><span class="w-1.5 h-1.5 rounded-full bg-emerald-500 mr-1.5"></span> Received</span>`;
                 } else if (group.statusGroup === 'PROGRESS') {
-                    badgeHTML = `<span class="inline-flex items-center px-2.5 py-1 rounded-full text-[11px] font-semibold bg-blue-100 text-blue-700 whitespace-nowrap"><span class="w-1.5 h-1.5 rounded-full bg-blue-500 mr-1.5"></span> Progress Kirim</span>`;
+                    badgeHTML = `<span class="inline-flex items-center px-2.5 py-1 rounded-full text-[11px] font-semibold bg-blue-100 text-blue-700"><span class="w-1.5 h-1.5 rounded-full bg-blue-500 mr-1.5"></span> Progress Kirim</span>`;
                 } else {
-                    badgeHTML = `<span class="inline-flex items-center px-2.5 py-1 rounded-full text-[11px] font-semibold bg-amber-100 text-amber-700 whitespace-nowrap"><span class="w-1.5 h-1.5 rounded-full bg-amber-500 mr-1.5"></span> Pending</span>`;
+                    badgeHTML = `<span class="inline-flex items-center px-2.5 py-1 rounded-full text-[11px] font-semibold bg-amber-100 text-amber-700"><span class="w-1.5 h-1.5 rounded-full bg-amber-500 mr-1.5"></span> Pending</span>`;
                 }
 
                 let tr = document.createElement('tr');
-                tr.className = "hover:bg-slate-50 transition-colors border-b border-slate-100 last:border-0";
+                tr.className = "hover:bg-slate-50 transition-colors border-b border-slate-100";
                 tr.innerHTML = `
                     <td class="py-4 px-4 font-medium text-slate-400 text-center text-xs">${rowNumber}</td>
-                    <td onclick="openDetailModal('${key.replace(/'/g, "\\'")}')" class="py-4 px-4 font-semibold text-indigo-600 hover:text-indigo-800 cursor-pointer transition-colors whitespace-nowrap">${group.noPR}</td>
-                    <td onclick="openDetailModal('${key.replace(/'/g, "\\'")}')" class="py-4 px-4 font-semibold text-indigo-600 hover:text-indigo-800 cursor-pointer transition-colors whitespace-nowrap">${key}</td>
-                    <td class="py-4 px-4 text-slate-700 font-medium min-w-[150px]">${group.vendor}</td>
-                    <td class="py-4 px-4 text-slate-600 text-xs min-w-[120px]">${displayUser}</td>
-                    <td class="py-4 px-4 text-center">
-                        <span class="bg-slate-100 text-slate-600 px-2.5 py-1 rounded-md text-xs font-bold whitespace-nowrap">${itemCount}</span>
-                    </td>
-                    <td class="py-4 px-4 text-slate-600 text-xs font-medium leading-relaxed">${displayDate}</td>
+                    <td onclick="openDetailModal('${key.replace(/'/g, "\\'")}')" class="py-4 px-4 font-semibold text-indigo-600 hover:text-indigo-800 cursor-pointer whitespace-nowrap">${group.noPR}</td>
+                    <td onclick="openDetailModal('${key.replace(/'/g, "\\'")}')" class="py-4 px-4 font-semibold text-indigo-600 hover:text-indigo-800 cursor-pointer whitespace-nowrap">${key}</td>
+                    <td class="py-4 px-4 text-slate-700 font-medium">${group.vendor}</td>
+                    <td class="py-4 px-4 text-slate-600 text-xs">${displayUser}</td>
+                    <td class="py-4 px-4 text-center"><span class="bg-slate-100 text-slate-600 px-2.5 py-1 rounded-md text-xs font-bold">${itemCount}</span></td>
+                    <td class="py-4 px-4 text-slate-600 text-xs">${displayDate}</td>
                     <td class="py-4 px-4">${badgeHTML}</td>
                     <td class="py-4 px-4 text-center">
-                        <button onclick="openDetailModal('${key.replace(/'/g, "\\'")}')" class="bg-slate-100 hover:bg-indigo-100 text-slate-600 hover:text-indigo-600 px-3 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1 mx-auto">
-                            <i class="fa-solid fa-receipt"></i> Cek
-                        </button>
+                        <button onclick="openDetailModal('${key.replace(/'/g, "\\'")}')" class="bg-slate-100 hover:bg-indigo-100 text-slate-600 hover:text-indigo-600 px-3 py-1.5 rounded-lg text-xs font-bold transition">Cek</button>
                     </td>
                 `;
                 tbody.appendChild(tr);
@@ -913,16 +1138,8 @@
             closeBillingModal();
         }
 
-        function handleSearch() {
-            currentPage = 1; 
-            renderTable();
-        }
-
-        function handleFilterChange() {
-            currentFilterStatus = document.getElementById('statusFilter').value;
-            currentPage = 1; 
-            renderTable();
-        }
+        function handleSearch() { currentPage = 1; renderTable(); }
+        function handleFilterChange() { currentFilterStatus = document.getElementById('statusFilter').value; currentPage = 1; renderTable(); }
 
         function openBillingModal() { document.getElementById('billingModal').classList.remove('hidden'); }
         function closeBillingModal() { document.getElementById('billingModal').classList.add('hidden'); }
@@ -930,28 +1147,24 @@
         function openVendorModal() {
             let container = document.getElementById('vendorListContainer');
             container.innerHTML = "";
-            if (allVendors.size === 0) {
-                container.innerHTML = `<p class="text-sm text-slate-500 text-center py-4">Tidak ada data vendor.</p>`;
-            } else {
-                Array.from(allVendors).sort().forEach(vendor => {
-                    let btn = document.createElement('div');
-                    btn.className = "flex items-center justify-between p-4 bg-white hover:bg-indigo-50 border border-slate-200 rounded-xl cursor-pointer transition shadow-sm group";
-                    btn.innerHTML = `
-                        <div class="flex items-center space-x-3">
-                            <div class="w-10 h-10 rounded-lg bg-indigo-100 text-indigo-600 flex items-center justify-center text-sm font-bold"><i class="fa-solid fa-building"></i></div>
-                            <span class="font-semibold text-slate-700 text-sm group-hover:text-indigo-700 transition-colors">${vendor}</span>
-                        </div>
-                        <span class="text-[10px] uppercase tracking-wider text-indigo-600 font-bold bg-indigo-100/60 px-3 py-1 rounded-md">Pilih <i class="fa-solid fa-arrow-right ml-1"></i></span>
-                    `;
-                    btn.onclick = function() {
-                        document.getElementById('searchInput').value = vendor;
-                        closeVendorModal();
-                        currentPage = 1;
-                        renderTable();
-                    };
-                    container.appendChild(btn);
-                });
-            }
+            Array.from(allVendors).sort().forEach(vendor => {
+                let btn = document.createElement('div');
+                btn.className = "flex items-center justify-between p-4 bg-white hover:bg-indigo-50 border border-slate-200 rounded-xl cursor-pointer transition shadow-sm group";
+                btn.innerHTML = `
+                    <div class="flex items-center space-x-3">
+                        <div class="w-10 h-10 rounded-lg bg-indigo-100 text-indigo-600 flex items-center justify-center text-sm font-bold"><i class="fa-solid fa-building"></i></div>
+                        <span class="font-semibold text-slate-700 text-sm group-hover:text-indigo-700">${vendor}</span>
+                    </div>
+                    <span class="text-[10px] uppercase tracking-wider text-indigo-600 font-bold bg-indigo-100/60 px-3 py-1 rounded-md">Pilih <i class="fa-solid fa-arrow-right ml-1"></i></span>
+                `;
+                btn.onclick = () => {
+                    document.getElementById('searchInput').value = vendor;
+                    closeVendorModal();
+                    switchView('purchase');
+                    handleSearch();
+                };
+                container.appendChild(btn);
+            });
             document.getElementById('vendorModal').classList.remove('hidden');
         }
         function closeVendorModal() { document.getElementById('vendorModal').classList.add('hidden'); }
@@ -959,72 +1172,28 @@
         function openDetailModal(key) {
             let group = groupedData[key];
             if (!group) return;
-
             document.getElementById('modalTitle').innerText = `Detail PR: ${group.noPR}`;
             document.getElementById('modalSubtitle').innerText = `PO: ${key} | Total ${group.items.length} item terdaftar.`;
-
-            let banner = document.getElementById('modalBillingBanner');
-            // Banner billing di detail modal HANYA MUNCUL jika SUDAH LOGIN
-            if (isLoggedIn && group.billingStatus && group.billingStatus !== "-") {
-                banner.classList.remove('hidden');
-                if (group.isPaid) {
-                    banner.className = "mb-4 rounded-xl p-4 border border-teal-200 bg-teal-50 flex items-center gap-3 text-teal-800";
-                    banner.innerHTML = `<div class="w-10 h-10 rounded-full bg-teal-200 text-teal-700 flex items-center justify-center text-xl shrink-0"><i class="fa-solid fa-check-circle"></i></div><div><p class="text-xs font-bold text-teal-600 uppercase">Status Billing</p><p class="text-lg font-extrabold">${group.billingStatus}</p></div>`;
-                } else {
-                    banner.className = "mb-4 rounded-xl p-4 border border-rose-200 bg-rose-50 flex items-center gap-3 text-rose-800";
-                    banner.innerHTML = `<div class="w-10 h-10 rounded-full bg-rose-200 text-rose-700 flex items-center justify-center text-xl shrink-0"><i class="fa-solid fa-clock"></i></div><div><p class="text-xs font-bold text-rose-600 uppercase">Status Billing</p><p class="text-lg font-extrabold">${group.billingStatus}</p></div>`;
-                }
-            } else {
-                banner.classList.add('hidden');
-            }
 
             let modalBody = document.getElementById('modalTableBody');
             modalBody.innerHTML = "";
 
             group.items.forEach(item => {
-                let rStatus = getStatusData(item);
-                let displayStatus = rStatus ? rStatus : "-";
-                let classStr = classifyStatus(rStatus);
-                let badgeClass = "bg-amber-100 text-amber-700"; 
-                
-                if (classStr === 'RECEIVED') badgeClass = "bg-emerald-100 text-emerald-700";
-                else if (classStr === 'PROGRESS') badgeClass = "bg-blue-100 text-blue-700";
-                else if (!rStatus) displayStatus = "Belum Datang"; 
-
-                let statusBadge = `<span class="px-2 py-1 rounded text-[11px] font-bold ${badgeClass} whitespace-nowrap">${displayStatus}</span>`;
-                let fDatang = formatTanggal(item.tglDatang);
-                let fKirim = formatTanggal(item.tglKirim);
-                let itemDate = "";
-                
-                if (fDatang !== "-") itemDate += `<span class="opacity-70">Datang:</span> ${fDatang}`;
-                if (fKirim !== "-") {
-                    if(itemDate !== "") itemDate += `<br>`;
-                    itemDate += `<span class="opacity-70">Kirim:</span> ${fKirim}`;
-                }
-                itemDate = itemDate || "-";
-
+                let rStatus = getStatusData(item) || "Belum Datang";
                 let tr = modalBody.insertRow();
-                tr.className = "hover:bg-slate-50 border-b border-slate-100 transition-colors";
+                tr.className = "hover:bg-slate-50 border-b border-slate-100";
                 tr.innerHTML = `
                     <td class="py-4 px-5 text-slate-800 font-semibold">${item.item}</td>
-                    <td class="py-4 px-5 text-slate-600 font-medium text-center">${item.ukuran}</td>
-                    <td class="py-4 px-5 text-center font-bold text-slate-700">${item.qty}</td>
+                    <td class="py-4 px-5 text-center text-slate-600">${item.ukuran}</td>
+                    <td class="py-4 px-5 text-center font-bold">${item.qty}</td>
                     <td class="py-4 px-5 text-slate-600">${item.noDO}</td>
-                    <td class="py-4 px-5">${statusBadge}</td>
-                    <td class="py-4 px-5 text-slate-600 text-xs font-medium leading-relaxed whitespace-nowrap">${itemDate}</td>
+                    <td class="py-4 px-5"><span class="px-2 py-1 rounded text-xs font-bold bg-slate-100">${rStatus}</span></td>
+                    <td class="py-4 px-5 text-xs">${formatTanggal(item.tglDatang)}</td>
                 `;
             });
             document.getElementById('detailModal').classList.remove('hidden');
         }
-
         function closeDetailModal() { document.getElementById('detailModal').classList.add('hidden'); }
-
-        window.onclick = function(event) {
-            if (event.target === document.getElementById('detailModal')) closeDetailModal();
-            if (event.target === document.getElementById('vendorModal')) closeVendorModal();
-            if (event.target === document.getElementById('billingModal')) closeBillingModal();
-            if (event.target === document.getElementById('checkModal')) closeCheckModal();
-        }
 
         document.addEventListener('DOMContentLoaded', fetchSheetData);
     </script>
