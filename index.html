@@ -102,7 +102,6 @@
         
         <!-- SIDEBAR -->
         <aside id="appSidebar" class="w-64 app-sidebar flex flex-col fixed inset-y-0 left-0 z-50 transform -translate-x-full lg:translate-x-0 transition-transform duration-300 border-r border-slate-800">
-            <!-- Header Sidebar dengan Logo yang Diperbesar (h-14 / h-16) -->
             <div class="h-24 flex items-center justify-between px-6 border-b border-slate-800/80">
                 <div class="flex items-center space-x-3 cursor-pointer select-none py-2" onclick="handleLogoClick()">
                     <img src="https://inconis.com/web/image/12573-c55c95e6/Inconis.png" alt="Inconis Logo" class="h-14 w-auto object-contain bg-white rounded-xl p-1.5 shadow-md">
@@ -112,7 +111,6 @@
                 </button>
             </div>
 
-            <!-- Sidebar Navigation Links -->
             <div class="flex-grow py-6 px-4 space-y-1 overflow-y-auto">
                 <a href="#" class="sidebar-item active" id="navMonitoring" onclick="switchView('monitoring')">
                     <div class="flex items-center space-x-3">
@@ -162,13 +160,11 @@
                     </div>
                     
                     <div class="flex items-center space-x-3">
-                        <!-- Tombol Sinkronisasi -->
                         <button onclick="fetchSheetData()" class="hidden sm:flex items-center space-x-2 bg-indigo-600 hover:bg-indigo-500 text-white px-4 py-2 rounded-xl text-sm font-medium transition shadow-sm active:scale-95">
                             <i class="fa-solid fa-rotate" id="syncIcon"></i>
                             <span>Sinkronisasi</span>
                         </button>
 
-                        <!-- Tombol Admin di Pojok Kanan Atas -->
                         <button onclick="document.getElementById('loginModal').classList.remove('hidden')" class="flex items-center space-x-2 bg-slate-800 hover:bg-slate-700 text-white px-4 py-2 rounded-xl text-sm font-medium transition border border-slate-700 shadow-sm active:scale-95">
                             <i class="fa-solid fa-user-shield text-indigo-400"></i>
                             <span>Admin</span>
@@ -345,8 +341,9 @@
                             <span id="tableCount" class="text-[10px] sm:text-xs font-bold bg-indigo-50 text-indigo-700 px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg border border-indigo-100">Memuat data...</span>
                         </div>
 
-                        <div class="hidden sm:block overflow-x-auto overflow-y-auto max-h-[70vh]">
-                            <table class="w-full text-left border-collapse">
+                        <!-- PERBAIKAN: Tabel bisa digeser (overflow-x-auto) di HP agar tidak kosong/terpotong -->
+                        <div class="overflow-x-auto overflow-y-auto max-h-[70vh]">
+                            <table class="w-full text-left border-collapse min-w-[800px]">
                                 <thead class="bg-slate-50 border-b border-slate-200 sticky top-0 z-10">
                                     <tr class="text-slate-500 text-[11px] uppercase tracking-wider">
                                         <th class="py-4 px-4 font-bold text-center w-12 whitespace-nowrap">No</th>
@@ -363,8 +360,6 @@
                                 <tbody id="tableBody" class="divide-y divide-slate-100 text-sm bg-white"></tbody>
                             </table>
                         </div>
-
-                        <div id="mobileCardBody" class="block sm:hidden divide-y divide-slate-100 bg-white"></div>
 
                         <div class="p-4 sm:p-5 border-t border-slate-100 bg-slate-50/50 flex flex-col sm:flex-row items-center justify-between gap-4">
                             <div class="flex items-center space-x-2 w-full sm:w-auto justify-between sm:justify-start">
@@ -563,7 +558,7 @@
     <script>
         const API_URL = "https://script.google.com/macros/s/AKfycbwEDWMcYTVePKpa3JkGusA1nKOnomTlLL0-I2FgtxhUwHkDwyZZzGZCMZoSdibveZNPmA/exec";
         
-        let rawData = [];     
+        let rawData = [];      
         let groupedData = {};  
         let allVendors = new Set();
         let currentFilterStatus = 'ALL';
@@ -1008,7 +1003,6 @@
 
         function renderTable() {
             const tbody = document.getElementById('tableBody');
-            const mobileBody = document.getElementById('mobileCardBody');
             const emptyState = document.getElementById('emptyState');
             
             const rawSearch = document.getElementById('searchInput').value.toLowerCase();
@@ -1016,7 +1010,6 @@
             const statusFilterVal = document.getElementById('statusFilter').value;
 
             tbody.innerHTML = "";
-            mobileBody.innerHTML = "";
 
             let keys = Object.keys(groupedData);
             let filteredKeys = keys.filter(key => {
@@ -1074,11 +1067,11 @@
 
                 let badgeHTML = "";
                 if (group.statusGroup === 'RECEIVED') {
-                    badgeHTML = `<span class="inline-flex items-center px-2.5 py-1 rounded-full text-[11px] font-semibold bg-emerald-100 text-emerald-700"><span class="w-1.5 h-1.5 rounded-full bg-emerald-500 mr-1.5"></span> Received</span>`;
+                    badgeHTML = `<span class="inline-flex items-center px-2.5 py-1 rounded-full text-[11px] font-semibold bg-emerald-100 text-emerald-700 whitespace-nowrap"><span class="w-1.5 h-1.5 rounded-full bg-emerald-500 mr-1.5"></span> Received</span>`;
                 } else if (group.statusGroup === 'PROGRESS') {
-                    badgeHTML = `<span class="inline-flex items-center px-2.5 py-1 rounded-full text-[11px] font-semibold bg-blue-100 text-blue-700"><span class="w-1.5 h-1.5 rounded-full bg-blue-500 mr-1.5"></span> Progress Kirim</span>`;
+                    badgeHTML = `<span class="inline-flex items-center px-2.5 py-1 rounded-full text-[11px] font-semibold bg-blue-100 text-blue-700 whitespace-nowrap"><span class="w-1.5 h-1.5 rounded-full bg-blue-500 mr-1.5"></span> Progress Kirim</span>`;
                 } else {
-                    badgeHTML = `<span class="inline-flex items-center px-2.5 py-1 rounded-full text-[11px] font-semibold bg-amber-100 text-amber-700"><span class="w-1.5 h-1.5 rounded-full bg-amber-500 mr-1.5"></span> Pending</span>`;
+                    badgeHTML = `<span class="inline-flex items-center px-2.5 py-1 rounded-full text-[11px] font-semibold bg-amber-100 text-amber-700 whitespace-nowrap"><span class="w-1.5 h-1.5 rounded-full bg-amber-500 mr-1.5"></span> Pending</span>`;
                 }
 
                 let tr = document.createElement('tr');
