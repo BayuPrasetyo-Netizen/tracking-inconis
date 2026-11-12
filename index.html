@@ -441,6 +441,36 @@
         </div>
     </div>
 
+    <!-- MODAL PILIHAN UPLOAD DOKUMEN -->
+    <div id="uploadModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-sm w-full overflow-hidden">
+            <div class="p-5 border-b border-slate-100 flex items-center justify-between bg-white">
+                <div>
+                    <h3 class="font-bold text-base text-slate-800">Upload Dokumen PO</h3>
+                    <p class="text-xs text-indigo-600 font-semibold" id="uploadPoTitle">-</p>
+                </div>
+                <button onclick="closeUploadModal()" class="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-600 flex items-center justify-center transition"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="p-6 bg-slate-50 space-y-4">
+                <div>
+                    <label class="block text-xs font-bold text-slate-600 uppercase mb-2">Pilih Jenis Dokumen:</label>
+                    <select id="docTypeSelect" class="w-full p-3 bg-white border border-slate-300 rounded-xl text-sm font-semibold text-slate-700 focus:ring-2 focus:ring-indigo-500">
+                        <option value="DO">Surat Jalan / DO (Delivery Order)</option>
+                        <option value="Invoice">Invoice Vendor</option>
+                        <option value="Kwitansi">Kwitansi / Lainnya</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-600 uppercase mb-2">Pilih File (PDF / Gambar):</label>
+                    <input type="file" id="fileInput" accept=".pdf,image/*" class="w-full text-xs text-slate-500 file:mr-4 file:py-2.5 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100 cursor-pointer">
+                </div>
+                <button onclick="prosesUploadFile()" id="btnUploadAction" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white py-3 rounded-xl font-bold transition shadow-md flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-cloud-arrow-up"></i> Upload ke Drive
+                </button>
+            </div>
+        </div>
+    </div>
+
     <!-- MODAL PILIHAN BILLING -->
     <div id="billingModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
         <div class="bg-white rounded-2xl shadow-2xl max-w-sm w-full flex flex-col overflow-hidden">
@@ -564,6 +594,7 @@
         let currentPage = 1;
         let rowsPerPage = 100;
         let isLoggedIn = false;
+        let activeUploadPO = "";
 
         function toggleSidebar() {
             const sidebar = document.getElementById('appSidebar');
@@ -748,6 +779,7 @@
                 }
                 
                 alert('Berhasil Login sebagai Admin!');
+                renderTable(); 
             } else {
                 alert('PIN Salah!');
             }
@@ -769,6 +801,70 @@
                 loadPembayaranData();
             }
             alert('Berhasil Logout');
+            renderTable();
+        }
+
+        function openUploadModal(poNumber) {
+            if (!isLoggedIn) {
+                document.getElementById('loginModal').classList.remove('hidden');
+                return;
+            }
+            activeUploadPO = poNumber;
+            document.getElementById('uploadPoTitle').innerText = poNumber;
+            document.getElementById('fileInput').value = '';
+            document.getElementById('uploadModal').classList.remove('hidden');
+        }
+
+        function closeUploadModal() {
+            document.getElementById('uploadModal').classList.add('hidden');
+        }
+
+        async function prosesUploadFile() {
+            const fileInput = document.getElementById('fileInput');
+            const docType = document.getElementById('docTypeSelect').value;
+            if (fileInput.files.length === 0) return alert("Pilih file terlebih dahulu!");
+
+            const file = fileInput.files[0];
+            const btn = document.getElementById('btnUploadAction');
+            btn.disabled = true;
+            btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin mr-2"></i>Mengunggah...`;
+
+            let safePoName = activeUploadPO.replace(/[\/\\]/g, '_');
+            let fileExtension = file.name.split('.').pop();
+            let customFileName = `${safePoName}_${docType}.${fileExtension}`;
+
+            const reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onload = async function () {
+                let base64Data = reader.result.split(',')[1];
+                let payload = {
+                    action: "uploadFile",
+                    filename: customFileName,
+                    mimeType: file.type,
+                    fileData: base64Data,
+                    po: activeUploadPO
+                };
+
+                try {
+                    let res = await fetch(API_URL, {
+                        method: 'POST',
+                        body: JSON.stringify(payload)
+                    });
+                    let result = await res.json();
+                    if (result.success) {
+                        alert("Berhasil mengunggah dokumen ke Google Drive!");
+                        closeUploadModal();
+                    } else {
+                        alert("Gagal mengunggah: " + (result.message || 'Unknown error'));
+                    }
+                } catch (e) {
+                    console.error(e);
+                    alert("Terjadi kesalahan jaringan saat upload.");
+                } finally {
+                    btn.disabled = false;
+                    btn.innerHTML = `<i class="fa-solid fa-cloud-arrow-up"></i> Upload ke Drive`;
+                }
+            };
         }
 
         function openInputModal() {
@@ -1078,7 +1174,9 @@
                     badgeHTMLMobile = `<span class="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-amber-100 text-amber-700">Pending</span>`;
                 }
 
-                // 1. Render untuk Tampilan Desktop (Tabel)
+                let uploadBtnHTML = isLoggedIn ? 
+                    `<button onclick="openUploadModal('${key.replace(/'/g, "\\'")}')" title="Upload DO / Invoice" class="bg-indigo-50 hover:bg-indigo-600 text-indigo-600 hover:text-white w-8 h-8 rounded-lg text-xs font-bold transition flex items-center justify-center shadow-sm"><i class="fa-regular fa-file-lines"></i></button>` : '';
+
                 let tr = document.createElement('tr');
                 tr.className = "hover:bg-slate-50 transition-colors border-b border-slate-100";
                 tr.innerHTML = `
@@ -1090,13 +1188,15 @@
                     <td class="py-4 px-4 text-center"><span class="bg-slate-100 text-slate-600 px-2.5 py-1 rounded-md text-xs font-bold">${itemCount}</span></td>
                     <td class="py-4 px-4 text-slate-600 text-xs">${displayDate}</td>
                     <td class="py-4 px-4">${badgeHTML}</td>
-                    <td class="py-4 px-4 text-center">
-                        <button onclick="openDetailModal('${key.replace(/'/g, "\\'")}')" class="bg-slate-100 hover:bg-indigo-100 text-slate-600 hover:text-indigo-600 px-3 py-1.5 rounded-lg text-xs font-bold transition">Cek</button>
+                    <td class="py-4 px-4">
+                        <div class="flex items-center justify-center gap-1.5">
+                            <button onclick="openDetailModal('${key.replace(/'/g, "\\'")}')" class="bg-slate-100 hover:bg-indigo-100 text-slate-600 hover:text-indigo-600 px-3 py-1.5 rounded-lg text-xs font-bold transition">Cek</button>
+                            ${uploadBtnHTML}
+                        </div>
                     </td>
                 `;
                 tbody.appendChild(tr);
 
-                // 2. Render untuk Tampilan HP (Card Vertikal)
                 let cardDiv = document.createElement('div');
                 cardDiv.className = "p-4 hover:bg-slate-50 transition space-y-2";
                 cardDiv.innerHTML = `
@@ -1123,9 +1223,12 @@
                             <p class="text-[10px] text-slate-400 uppercase font-bold">Tgl / Jadwal</p>
                             <p class="text-xs text-slate-600">${displayDate}</p>
                         </div>
-                        <button onclick="openDetailModal('${key.replace(/'/g, "\\'")}')" class="bg-indigo-50 hover:bg-indigo-100 text-indigo-600 px-3 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1">
-                            <i class="fa-solid fa-receipt"></i> Detail
-                        </button>
+                        <div class="flex items-center gap-2">
+                            ${isLoggedIn ? `<button onclick="openUploadModal('${key.replace(/'/g, "\\'")}')" class="bg-indigo-50 hover:bg-indigo-100 text-indigo-600 px-2.5 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1"><i class="fa-regular fa-file-lines"></i> Upload</button>` : ''}
+                            <button onclick="openDetailModal('${key.replace(/'/g, "\\'")}')" class="bg-indigo-50 hover:bg-indigo-100 text-indigo-600 px-3 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1">
+                                <i class="fa-solid fa-receipt"></i> Detail
+                            </button>
+                        </div>
                     </div>
                 `;
                 mobileBody.appendChild(cardDiv);
