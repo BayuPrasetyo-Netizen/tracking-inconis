@@ -47,39 +47,14 @@
         .dot:nth-child(2) { animation-delay: -0.16s; }
         @keyframes bounce { 0%, 80%, 100% { transform: scale(0); } 40% { transform: scale(1); } }
 
-        .app-sidebar {
-            background-color: #111827;
-            color: #9ca3af;
-        }
+        .app-sidebar { background-color: #111827; color: #9ca3af; }
         .sidebar-item {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 12px 16px;
-            color: #9ca3af;
-            font-size: 14px;
-            font-weight: 500;
-            border-radius: 12px;
-            transition: all 0.2s ease;
-            cursor: pointer;
-            margin-bottom: 4px;
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 12px 16px; color: #9ca3af; font-size: 14px; font-weight: 500;
+            border-radius: 12px; transition: all 0.2s ease; cursor: pointer; margin-bottom: 4px;
         }
-        .sidebar-item:hover {
-            background-color: rgba(255, 255, 255, 0.05);
-            color: #f3f4f6;
-        }
-        .sidebar-item.active {
-            background-color: rgba(255, 255, 255, 0.1);
-            color: #ffffff;
-        }
-
-        /* Style Custom untuk Baris Tabel */
-        .row-urgent { background-color: #fef2f2 !important; } /* Merah tipis */
-        .row-pending { background-color: #fffbeb !important; } /* Kuning tipis */
-        .row-urgent:hover, .row-pending:hover { filter: brightness(0.95); }
-        
-        .aging-urgent { color: #dc2626; font-weight: bold; }
-        .aging-normal { color: #475569; }
+        .sidebar-item:hover { background-color: rgba(255, 255, 255, 0.05); color: #f3f4f6; }
+        .sidebar-item.active { background-color: rgba(255, 255, 255, 0.1); color: #ffffff; }
     </style>
 </head>
 <body class="bg-slate-50 bg-watermark text-slate-800 min-h-screen flex flex-col relative">
@@ -320,32 +295,25 @@
                         </div>
                     </div>
 
-                    <!-- AREA PENCARIAN & TOMBOL EXPORT -->
-                    <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-200/60 flex flex-col lg:flex-row items-center justify-between gap-4">
-                        <div class="relative w-full lg:w-[400px]">
+                    <!-- AREA PENCARIAN & FILTER -->
+                    <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-200/60 flex flex-col sm:flex-row items-center justify-between gap-4">
+                        <div class="relative w-full sm:w-[500px]">
                             <span class="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none text-slate-400">
                                 <i class="fa-solid fa-magnifying-glass"></i>
                             </span>
                             <input type="text" id="searchInput" oninput="handleSearch()" placeholder="Cari No PR, PO (Pisahkan dengan koma)..." class="w-full pl-11 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white transition placeholder:text-slate-400">
                         </div>
 
-                        <div class="flex items-center space-x-3 w-full lg:w-auto justify-between lg:justify-end flex-wrap gap-2">
-                            <div class="flex items-center space-x-2">
-                                <label class="text-xs font-bold text-slate-500 uppercase tracking-wider hidden sm:block">Status:</label>
-                                <select id="statusFilter" onchange="handleFilterChange()" class="w-full sm:w-auto bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-sm font-medium text-slate-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white transition cursor-pointer">
-                                    <option value="ALL">Semua Status</option>
-                                    <option value="RECEIVED">Sudah Received</option>
-                                    <option value="PROGRESS">Progress Kirim</option>
-                                    <option value="PENDING">Belum Datang</option>
-                                    <option value="BILLING_PAID" class="billing-option hidden">Sudah Lunas (Billing)</option>
-                                    <option value="BILLING_UNPAID" class="billing-option hidden">Belum Lunas (Billing)</option>
-                                </select>
-                            </div>
-                            
-                            <!-- TOMBOL EXPORT EXCEL -->
-                            <button onclick="exportToExcel()" class="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2.5 rounded-xl text-sm font-bold transition shadow-sm flex items-center gap-2 active:scale-95">
-                                <i class="fa-solid fa-file-excel"></i> Export Excel
-                            </button>
+                        <div class="flex items-center space-x-3 w-full sm:w-auto justify-between sm:justify-end">
+                            <label class="text-xs font-bold text-slate-500 uppercase tracking-wider hidden sm:block">Status:</label>
+                            <select id="statusFilter" onchange="handleFilterChange()" class="w-full sm:w-auto bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-sm font-medium text-slate-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white transition cursor-pointer">
+                                <option value="ALL">Semua Status</option>
+                                <option value="RECEIVED">Sudah Received</option>
+                                <option value="PROGRESS">Progress Kirim</option>
+                                <option value="PENDING">Belum Datang</option>
+                                <option value="BILLING_PAID" class="billing-option hidden">Sudah Lunas (Billing)</option>
+                                <option value="BILLING_UNPAID" class="billing-option hidden">Belum Lunas (Billing)</option>
+                            </select>
                         </div>
                     </div>
 
@@ -355,9 +323,9 @@
                             <span id="tableCount" class="text-[10px] sm:text-xs font-bold bg-indigo-50 text-indigo-700 px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg border border-indigo-100">Memuat data...</span>
                         </div>
 
-                        <!-- TAMPILAN DESKTOP: Tabel Biasa (Hidden di HP) -->
+                        <!-- TAMPILAN DESKTOP: Tabel Biasa -->
                         <div class="hidden md:block overflow-x-auto overflow-y-auto max-h-[70vh]">
-                            <table class="w-full text-left border-collapse min-w-[900px]" id="tabelUtama">
+                            <table class="w-full text-left border-collapse min-w-[800px]" id="tabelUtama">
                                 <thead class="bg-slate-50 border-b border-slate-200 sticky top-0 z-10">
                                     <tr class="text-slate-500 text-[11px] uppercase tracking-wider">
                                         <th class="py-4 px-4 font-bold text-center w-12 whitespace-nowrap">No</th>
@@ -367,7 +335,6 @@
                                         <th class="py-4 px-4 font-bold min-w-[150px]">User</th>
                                         <th class="py-4 px-4 font-bold text-center whitespace-nowrap">Item</th>
                                         <th class="py-4 px-4 font-bold text-center min-w-[150px]">Tgl Kirim / Datang</th>
-                                        <th class="py-4 px-4 font-bold text-center whitespace-nowrap">Umur PO</th> <!-- KOLOM BARU -->
                                         <th class="py-4 px-4 font-bold whitespace-nowrap">Status</th>
                                         <th class="py-4 px-4 font-bold text-center whitespace-nowrap">Aksi</th>
                                     </tr>
@@ -376,21 +343,29 @@
                             </table>
                         </div>
 
-                        <!-- TAMPILAN HP: Kartu Responsif Vertikal (Hidden di Desktop) -->
+                        <!-- TAMPILAN HP: Kartu Responsif -->
                         <div id="mobileCardBody" class="block md:hidden divide-y divide-slate-100 bg-white"></div>
 
+                        <!-- FOOTER PAGINATION & EXPORT EXCEL -->
                         <div class="p-4 sm:p-5 border-t border-slate-100 bg-slate-50/50 flex flex-col sm:flex-row items-center justify-between gap-4">
                             <div class="flex items-center space-x-2 w-full sm:w-auto justify-between sm:justify-start">
                                 <span class="text-xs text-slate-500 font-medium">Tampilkan:</span>
                                 <select id="rowsPerPage" onchange="changeRowsPerPage()" class="bg-white border border-slate-300 rounded-lg px-3 py-1.5 text-xs font-bold text-slate-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 cursor-pointer shadow-sm">
                                     <option value="10">10</option>
                                     <option value="50">50</option>
-                                    <option value="70">70</option>
-                                    <option value="100" selected>100</option>
+                                    <option value="100">100</option>
+                                    <option value="1000">1000</option>
                                 </select>
                                 <span class="text-xs text-slate-500 font-medium">baris</span>
                             </div>
-                            <div class="flex items-center space-x-2" id="paginationControls"></div>
+                            
+                            <div class="flex items-center space-x-3">
+                                <!-- TOMBOL EXPORT KECIL -->
+                                <button onclick="exportToExcel()" class="bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-1.5 rounded-lg text-xs font-bold transition shadow-sm flex items-center gap-1.5 active:scale-95">
+                                    <i class="fa-solid fa-file-excel"></i> Export Excel
+                                </button>
+                                <div class="flex items-center space-x-2" id="paginationControls"></div>
+                            </div>
                         </div>
 
                         <div id="emptyState" class="hidden py-20 text-center bg-white">
@@ -410,7 +385,7 @@
         </div>
     </div>
 
-    <!-- SEMUA MODAL (Sama seperti sebelumnya, tidak diubah) -->
+    <!-- MODAL CEK STATUS -->
     <div id="checkModal" class="fixed inset-0 bg-slate-900/70 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
         <div class="bg-white rounded-2xl shadow-2xl max-w-4xl w-full max-h-[90vh] flex flex-col overflow-hidden">
             <div class="p-5 border-b border-slate-100 flex items-center justify-between bg-white">
@@ -461,6 +436,7 @@
         </div>
     </div>
 
+    <!-- MODAL UPLOAD -->
     <div id="uploadModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
         <div class="bg-white rounded-2xl shadow-2xl max-w-sm w-full overflow-hidden">
             <div class="p-5 border-b border-slate-100 flex items-center justify-between bg-white">
@@ -490,6 +466,7 @@
         </div>
     </div>
 
+    <!-- MODAL BILLING -->
     <div id="billingModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
         <div class="bg-white rounded-2xl shadow-2xl max-w-sm w-full flex flex-col overflow-hidden">
             <div class="p-5 border-b border-slate-100 flex items-center justify-between bg-white">
@@ -510,6 +487,7 @@
         </div>
     </div>
 
+    <!-- MODAL INPUT BARANG -->
     <div id="inputModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
         <div class="bg-white rounded-2xl shadow-2xl max-w-4xl w-full max-h-[90vh] flex flex-col overflow-hidden">
             <div class="p-5 border-b border-slate-100 flex items-center justify-between bg-white">
@@ -546,6 +524,7 @@
         </div>
     </div>
 
+    <!-- MODAL DETAIL PR/PO -->
     <div id="detailModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
         <div class="bg-white rounded-2xl shadow-2xl max-w-5xl w-full max-h-[85vh] flex flex-col overflow-hidden">
             <div class="p-4 sm:p-6 border-b border-slate-100 flex items-center justify-between bg-white">
@@ -580,6 +559,7 @@
         </div>
     </div>
 
+    <!-- MODAL VENDOR -->
     <div id="vendorModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
         <div class="bg-white rounded-2xl shadow-2xl max-w-xl w-full max-h-[85vh] flex flex-col overflow-hidden">
             <div class="p-4 sm:p-6 border-b border-slate-100 flex items-center justify-between bg-white">
@@ -598,6 +578,7 @@
         </div>
     </div>
 
+    <!-- MODAL LIHAT DOKUMEN -->
     <div id="viewDocModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[60] hidden flex items-center justify-center p-4">
         <div class="bg-white rounded-2xl shadow-2xl max-w-sm w-full flex flex-col overflow-hidden">
             <div class="p-5 border-b border-slate-100 flex items-center justify-between bg-white">
@@ -622,6 +603,91 @@
         let isLoggedIn = false;
         let activeUploadPO = "";
 
+        // --- FITUR EXPORT EXCEL (MENDETAIL PER ITEM) ---
+        function exportToExcel() {
+            if (!rawData || rawData.length === 0) return alert("Tidak ada data untuk diexport.");
+
+            // 1. Ambil data yang lagi difilter di tabel
+            const rawSearch = document.getElementById('searchInput').value.toLowerCase();
+            const searchTerms = rawSearch.split(',').map(term => term.trim()).filter(term => term.length > 0);
+            const statusFilterVal = document.getElementById('statusFilter').value;
+
+            let keys = Object.keys(groupedData);
+            let filteredKeys = keys.filter(key => {
+                let group = groupedData[key];
+                let matchStatus = true;
+                
+                if (statusFilterVal === 'RECEIVED') matchStatus = group.statusGroup === 'RECEIVED';
+                else if (statusFilterVal === 'PROGRESS') matchStatus = group.statusGroup === 'PROGRESS';
+                else if (statusFilterVal === 'PENDING') matchStatus = group.statusGroup === 'PENDING';
+                else if (statusFilterVal === 'BILLING_PAID') matchStatus = group.isPaid === true;
+                else if (statusFilterVal === 'BILLING_UNPAID') matchStatus = group.isPaid === false;
+
+                let matchSearch = true;
+                if (searchTerms.length > 0) {
+                    matchSearch = searchTerms.every(term => {
+                        return group.noPR.toLowerCase().includes(term) || 
+                               key.toLowerCase().includes(term) ||
+                               (group.vendor||"").toLowerCase().includes(term) ||
+                               Array.from(group.items).some(i => (i.item||"").toLowerCase().includes(term) || (i.user||"").toLowerCase().includes(term));
+                    });
+                }
+                return matchStatus && matchSearch;
+            });
+
+            // 2. Siapkan array penampung untuk Excel
+            let excelData = [];
+
+            // 3. Looping data per PO, lalu ambil setiap detail itemnya
+            filteredKeys.forEach(key => {
+                let group = groupedData[key];
+                group.items.forEach(item => {
+                    excelData.push({
+                        "No PR": group.noPR,
+                        "No PO": key,
+                        "Vendor": group.vendor,
+                        "User / Dept": item.user || "-",
+                        "Nama Item": item.item || "-",
+                        "Ukuran": item.ukuran || "-",
+                        "Qty": item.qty || "-",
+                        "Tgl Kirim": item.tglKirim || "-",
+                        "Tgl Datang": item.tglDatang || "-",
+                        "No DO": item.noDO || "-",
+                        "Status / No Receive": item.noReceive || "Belum Datang"
+                    });
+                });
+            });
+
+            if (excelData.length === 0) return alert("Data yang difilter kosong.");
+
+            // 4. Proses pembuatan file Excel pakai SheetJS
+            const worksheet = XLSX.utils.json_to_sheet(excelData);
+            
+            // Atur lebar kolom biar rapi
+            worksheet['!cols'] = [
+                { wch: 18 }, // No PR
+                { wch: 18 }, // No PO
+                { wch: 25 }, // Vendor
+                { wch: 20 }, // User
+                { wch: 35 }, // Nama Item
+                { wch: 10 }, // Ukuran
+                { wch: 8 },  // Qty
+                { wch: 12 }, // Tgl Kirim
+                { wch: 12 }, // Tgl Datang
+                { wch: 18 }, // No DO
+                { wch: 20 }  // Status
+            ];
+
+            const workbook = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(workbook, worksheet, "Rekap PR_PO");
+
+            // Nama file otomatis pakai tanggal
+            let today = new Date();
+            let dateStr = today.getFullYear() + "-" + String(today.getMonth()+1).padStart(2,'0') + "-" + String(today.getDate()).padStart(2,'0');
+            XLSX.writeFile(workbook, `Rekap_PR_PO_Inconis_${dateStr}.xlsx`);
+        }
+
+        // --- FUNGSI LAINNYA (SAMA SEPERTI SEBELUMNYA) ---
         function toggleSidebar() {
             const sidebar = document.getElementById('appSidebar');
             sidebar.classList.toggle('-translate-x-full');
@@ -660,47 +726,6 @@
             if (window.innerWidth < 1024 && !document.getElementById('appSidebar').classList.contains('-translate-x-full')) {
                 toggleSidebar();
             }
-        }
-
-        // --- FITUR BARU: EXPORT EXCEL ---
-        function exportToExcel() {
-            const table = document.getElementById('tabelUtama');
-            if(!table) return alert("Tabel tidak ditemukan.");
-            
-            // Simpan nama file dengan tanggal hari ini
-            let today = new Date();
-            let dateStr = today.getFullYear() + "-" + String(today.getMonth()+1).padStart(2,'0') + "-" + String(today.getDate()).padStart(2,'0');
-            let filename = `Rekap_PR_PO_Inconis_${dateStr}.xlsx`;
-
-            // Konversi HTML Table ke Excel
-            var wb = XLSX.utils.table_to_book(table, { sheet: "Rekap PO" });
-            XLSX.writeFile(wb, filename);
-        }
-
-        // --- FUNGSI BARU: HITUNG UMUR PO (AGING) ---
-        function hitungUmurPO(tglKirimString, statusGroup) {
-            if (statusGroup === 'RECEIVED') return '<span class="text-slate-400">-</span>'; // Kalau sudah datang, tidak perlu umur
-            
-            if (!tglKirimString || tglKirimString === '-') return '<span class="text-slate-400">-</span>';
-            
-            // Ekstrak tanggal dari format DD/MM/YYYY
-            let parts = tglKirimString.split('/');
-            if (parts.length !== 3) return '<span class="text-slate-400">-</span>';
-            
-            let tglPO = new Date(parts[2], parts[1] - 1, parts[0]); // YYYY, MM-1, DD
-            let hariIni = new Date();
-            
-            // Hitung selisih hari
-            let selisihWaktu = hariIni.getTime() - tglPO.getTime();
-            let selisihHari = Math.floor(selisihWaktu / (1000 * 3600 * 24));
-            
-            if (isNaN(selisihHari) || selisihHari < 0) return '<span class="text-slate-400">-</span>';
-            
-            // Highlight kalau lebih dari 14 hari
-            if (selisihHari > 14) {
-                return `<span class="aging-urgent">${selisihHari} Hari <i class="fa-solid fa-triangle-exclamation"></i></span>`;
-            }
-            return `<span class="aging-normal">${selisihHari} Hari</span>`;
         }
 
         async function loadPembayaranData() {
@@ -1123,22 +1148,15 @@
 
                 if (!groupedData[noPO]) {
                     let mappedBilling = paymentMap[noPO.trim().toUpperCase()] || row.billing || "-";
-                    // Simpan keterangan ke level Group agar bisa dibaca di baris tabel
                     groupedData[noPO] = { 
                         items: [], allItemsCount: 0, receivedItemsCount: 0, 
                         progressItemsCount: 0, pendingItemsCount: 0, 
-                        billingStatus: mappedBilling, vendor: vendor, noPR: row.noPR, tglTampil: [],
-                        isUrgent: false // Flag khusus urgent
+                        billingStatus: mappedBilling, vendor: vendor, noPR: row.noPR, tglTampil: []
                     };
                 }
                 
                 groupedData[noPO].items.push(row);
                 groupedData[noPO].allItemsCount++;
-
-                // Cek apakah ada keterangan urgent
-                if(row.keterangan && row.keterangan.toUpperCase().includes('URGENT')) {
-                    groupedData[noPO].isUrgent = true;
-                }
 
                 let statusClass = classifyStatus(getStatusData(row));
                 if (statusClass === 'RECEIVED') groupedData[noPO].receivedItemsCount++;
@@ -1151,11 +1169,6 @@
                 if (fDatang !== "-") strTgl += `Datang: ${fDatang}`;
                 if (fKirim !== "-") strTgl += `<br>Kirim: ${fKirim}`;
                 if (strTgl) groupedData[noPO].tglTampil.push(strTgl);
-                
-                // Simpan tanggal kirim mentah untuk dihitung umur PO-nya
-                if (!groupedData[noPO].tglKirimMentah && row.tglKirim !== "-") {
-                     groupedData[noPO].tglKirimMentah = row.tglKirim;
-                }
             });
 
             let totalPO = Object.keys(groupedData).length;
@@ -1339,9 +1352,6 @@
                     badgeHTMLMobile = `<span class="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-amber-100 text-amber-700">Pending</span>`;
                 }
 
-                // Hitung Umur PO
-                let umurPOHTML = hitungUmurPO(group.tglKirimMentah, group.statusGroup);
-
                 let uploadBtnHTML = isLoggedIn ? 
                     `<button onclick="openUploadModal('${key.replace(/'/g, "\\'")}')" title="Upload DO / Invoice" class="bg-indigo-50 hover:bg-indigo-600 text-indigo-600 hover:text-white w-8 h-8 rounded-lg text-xs font-bold transition flex items-center justify-center shadow-sm"><i class="fa-regular fa-file-lines"></i></button>` : '';
 
@@ -1351,16 +1361,8 @@
                     viewBtnHTML = `<button onclick="openViewDocModal('${key.replace(/'/g, "\\'")}')" title="Lihat Dokumen" class="bg-emerald-50 hover:bg-emerald-600 text-emerald-600 hover:text-white w-8 h-8 rounded-lg text-xs font-bold transition flex items-center justify-center shadow-sm"><i class="fa-solid fa-eye"></i></button>`;
                 }
 
-                // --- LOGIKA HIGHLIGHT BARIS ---
-                let rowStyle = "";
-                if (group.isUrgent) {
-                    rowStyle = "row-urgent"; // Merah tipis kalau urgent
-                } else if (group.statusGroup === 'PENDING') {
-                    rowStyle = "row-pending"; // Kuning tipis kalau pending
-                }
-
                 let tr = document.createElement('tr');
-                tr.className = `hover:bg-slate-50 transition-colors border-b border-slate-100 ${rowStyle}`;
+                tr.className = "hover:bg-slate-50 transition-colors border-b border-slate-100";
                 tr.innerHTML = `
                     <td class="py-4 px-4 font-medium text-slate-400 text-center text-xs">${rowNumber}</td>
                     <td onclick="openDetailModal('${key.replace(/'/g, "\\'")}')" class="py-4 px-4 font-semibold text-indigo-600 hover:text-indigo-800 cursor-pointer whitespace-nowrap">${group.noPR}</td>
@@ -1369,7 +1371,6 @@
                     <td class="py-4 px-4 text-slate-600 text-xs">${displayUser}</td>
                     <td class="py-4 px-4 text-center"><span class="bg-slate-100 text-slate-600 px-2.5 py-1 rounded-md text-xs font-bold">${itemCount}</span></td>
                     <td class="py-4 px-4 text-slate-600 text-xs">${displayDate}</td>
-                    <td class="py-4 px-4 text-center text-xs">${umurPOHTML}</td> <!-- ISI UMUR PO -->
                     <td class="py-4 px-4">${badgeHTML}</td>
                     <td class="py-4 px-4">
                         <div class="flex items-center justify-center gap-1.5">
@@ -1382,7 +1383,7 @@
                 tbody.appendChild(tr);
 
                 let cardDiv = document.createElement('div');
-                cardDiv.className = `p-4 hover:bg-slate-50 transition space-y-2 ${rowStyle}`;
+                cardDiv.className = "p-4 hover:bg-slate-50 transition space-y-2";
                 cardDiv.innerHTML = `
                     <div class="flex items-center justify-between">
                         <span class="text-xs font-bold text-slate-400">#${rowNumber}</span>
@@ -1406,7 +1407,6 @@
                         <div>
                             <p class="text-[10px] text-slate-400 uppercase font-bold">Tgl / Jadwal</p>
                             <p class="text-xs text-slate-600">${displayDate}</p>
-                            <p class="text-[10px] mt-1 text-slate-400 uppercase font-bold">Umur PO: ${umurPOHTML}</p>
                         </div>
                         <div class="flex items-center gap-2">
                             ${isLoggedIn ? `<button onclick="openUploadModal('${key.replace(/'/g, "\\'")}')" class="bg-indigo-50 hover:bg-indigo-100 text-indigo-600 px-2.5 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1"><i class="fa-regular fa-file-lines"></i> Upload</button>` : ''}
