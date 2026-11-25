@@ -353,14 +353,13 @@
                                 <select id="rowsPerPage" onchange="changeRowsPerPage()" class="bg-white border border-slate-300 rounded-lg px-3 py-1.5 text-xs font-bold text-slate-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 cursor-pointer shadow-sm">
                                     <option value="10">10</option>
                                     <option value="50">50</option>
-                                    <option value="100">100</option>
+                                    <option value="100" selected>100</option>
                                     <option value="1000">1000</option>
                                 </select>
                                 <span class="text-xs text-slate-500 font-medium">baris</span>
                             </div>
                             
                             <div class="flex items-center space-x-3">
-                                <!-- TOMBOL EXPORT KECIL -->
                                 <button onclick="exportToExcel()" class="bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-1.5 rounded-lg text-xs font-bold transition shadow-sm flex items-center gap-1.5 active:scale-95">
                                     <i class="fa-solid fa-file-excel"></i> Export Excel
                                 </button>
@@ -487,30 +486,50 @@
         </div>
     </div>
 
-    <!-- MODAL INPUT BARANG -->
+    <!-- MODAL INPUT BARANG (PARTIAL RECEIVING & NOTE SUDAH LENGKAP) -->
     <div id="inputModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
         <div class="bg-white rounded-2xl shadow-2xl max-w-4xl w-full max-h-[90vh] flex flex-col overflow-hidden">
             <div class="p-5 border-b border-slate-100 flex items-center justify-between bg-white">
-                <h3 class="font-bold text-lg text-slate-800"><i class="fa-solid fa-box-open text-indigo-600 mr-2"></i>Input Barang Datang</h3>
+                <div>
+                    <h3 class="font-bold text-lg text-slate-800"><i class="fa-solid fa-box-open text-indigo-600 mr-2"></i>Input Barang Datang</h3>
+                    <p class="text-xs text-slate-500 mt-0.5">Pilih item & masukkan jumlah PCS yang diterima</p>
+                </div>
                 <button onclick="closeInputModal()" class="w-10 h-10 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-600 flex items-center justify-center transition"><i class="fa-solid fa-xmark"></i></button>
             </div>
-            <div class="p-6 overflow-y-auto flex-grow bg-slate-50">
-                <div class="flex gap-2 mb-6">
-                    <input type="text" id="searchPOModal" onkeypress="handleEnter(event, 'searchPO')" placeholder="Ketik No PO..." class="w-full p-3 border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500 text-sm">
-                    <button onclick="searchPO()" class="bg-indigo-600 text-white px-6 rounded-xl font-bold hover:bg-indigo-700 transition">Cari</button>
+            <div class="p-6 overflow-y-auto flex-grow bg-slate-50 space-y-4">
+                <div class="flex gap-2">
+                    <input type="text" id="searchPOModal" onkeypress="handleEnter(event, 'searchPO')" placeholder="Ketik No PO (Contoh: PO/26/09/60711)..." class="w-full p-3 border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500 text-sm">
+                    <button onclick="searchPO()" id="btnCariPO" class="bg-indigo-600 text-white px-6 rounded-xl font-bold hover:bg-indigo-700 transition whitespace-nowrap">Cari</button>
                 </div>
-                <div id="poItemsContainer" class="hidden bg-white border border-slate-200 rounded-xl overflow-hidden shadow-sm mb-4">
-                    <table class="w-full text-left text-sm">
-                        <thead class="bg-slate-100 border-b border-slate-200">
-                            <tr>
-                                <th class="py-3 px-4 text-center w-12"><input type="checkbox" id="checkAll" onchange="toggleAll(this)"></th>
-                                <th class="py-3 px-4 font-bold">Nama Item</th>
-                                <th class="py-3 px-4 font-bold">Qty</th>
-                            </tr>
-                        </thead>
-                        <tbody id="poItemsBody" class="divide-y divide-slate-100"></tbody>
-                    </table>
+
+                <!-- BANNER INFO JIKA SEMUA ITEM DALAM PO SUDAH LENGKAP -->
+                <div id="poCompleteBanner" class="hidden bg-emerald-50 border border-emerald-200 rounded-xl p-4 flex items-center gap-3 text-emerald-800">
+                    <i class="fa-solid fa-circle-check text-2xl text-emerald-600"></i>
+                    <div>
+                        <h4 class="font-bold text-sm">Semua Item pada PO Ini Sudah Lengkap!</h4>
+                        <p class="text-xs text-emerald-700 mt-0.5">Seluruh barang dalam nomor PO ini sudah diterima 100%, tidak perlu input penerimaan lagi.</p>
+                    </div>
                 </div>
+
+                <!-- TABEL DAFTAR ITEM PO -->
+                <div id="poItemsContainer" class="hidden bg-white border border-slate-200 rounded-xl overflow-hidden shadow-sm">
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left text-sm">
+                            <thead class="bg-slate-100 border-b border-slate-200 text-slate-600 text-xs uppercase">
+                                <tr>
+                                    <th class="py-3 px-4 text-center w-12"><input type="checkbox" id="checkAll" onchange="toggleAll(this)" checked></th>
+                                    <th class="py-3 px-4 font-bold">Nama Item & Ukuran</th>
+                                    <th class="py-3 px-4 font-bold text-center">Qty PO</th>
+                                    <th class="py-3 px-4 font-bold text-center">Sisa</th>
+                                    <th class="py-3 px-4 font-bold text-center w-44">Qty Diterima / Status</th>
+                                </tr>
+                            </thead>
+                            <tbody id="poItemsBody" class="divide-y divide-slate-100"></tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- FORM TANGGAL & TOMBOL SIMPAN (MUNCUL HANYA JIKA MASIH ADA SISA BARANG) -->
                 <div id="receiveInputContainer" class="hidden bg-white p-5 rounded-xl border border-slate-200 shadow-sm space-y-4">
                     <div>
                         <label class="block text-sm font-bold text-slate-700 mb-2">Tanggal Datang</label>
@@ -607,7 +626,6 @@
         function exportToExcel() {
             if (!rawData || rawData.length === 0) return alert("Tidak ada data untuk diexport.");
 
-            // 1. Ambil data yang lagi difilter di tabel
             const rawSearch = document.getElementById('searchInput').value.toLowerCase();
             const searchTerms = rawSearch.split(',').map(term => term.trim()).filter(term => term.length > 0);
             const statusFilterVal = document.getElementById('statusFilter').value;
@@ -635,10 +653,8 @@
                 return matchStatus && matchSearch;
             });
 
-            // 2. Siapkan array penampung untuk Excel
             let excelData = [];
 
-            // 3. Looping data per PO, lalu ambil setiap detail itemnya
             filteredKeys.forEach(key => {
                 let group = groupedData[key];
                 group.items.forEach(item => {
@@ -660,34 +676,20 @@
 
             if (excelData.length === 0) return alert("Data yang difilter kosong.");
 
-            // 4. Proses pembuatan file Excel pakai SheetJS
             const worksheet = XLSX.utils.json_to_sheet(excelData);
-            
-            // Atur lebar kolom biar rapi
             worksheet['!cols'] = [
-                { wch: 18 }, // No PR
-                { wch: 18 }, // No PO
-                { wch: 25 }, // Vendor
-                { wch: 20 }, // User
-                { wch: 35 }, // Nama Item
-                { wch: 10 }, // Ukuran
-                { wch: 8 },  // Qty
-                { wch: 12 }, // Tgl Kirim
-                { wch: 12 }, // Tgl Datang
-                { wch: 18 }, // No DO
-                { wch: 20 }  // Status
+                { wch: 18 }, { wch: 18 }, { wch: 25 }, { wch: 20 }, { wch: 35 },
+                { wch: 10 }, { wch: 8 },  { wch: 12 }, { wch: 12 }, { wch: 18 }, { wch: 20 }
             ];
 
             const workbook = XLSX.utils.book_new();
             XLSX.utils.book_append_sheet(workbook, worksheet, "Rekap PR_PO");
 
-            // Nama file otomatis pakai tanggal
             let today = new Date();
             let dateStr = today.getFullYear() + "-" + String(today.getMonth()+1).padStart(2,'0') + "-" + String(today.getDate()).padStart(2,'0');
             XLSX.writeFile(workbook, `Rekap_PR_PO_Inconis_${dateStr}.xlsx`);
         }
 
-        // --- FUNGSI LAINNYA (SAMA SEPERTI SEBELUMNYA) ---
         function toggleSidebar() {
             const sidebar = document.getElementById('appSidebar');
             sidebar.classList.toggle('-translate-x-full');
@@ -1033,10 +1035,14 @@
             }
         }
 
+        // ========================================================
+        // LOGIKA INPUT BARANG DATANG (PARTIAL & NOTE SUDAH LENGKAP)
+        // ========================================================
         function openInputModal() {
             document.getElementById('inputModal').classList.remove('hidden');
             document.getElementById('poItemsContainer').classList.add('hidden');
             document.getElementById('receiveInputContainer').classList.add('hidden');
+            document.getElementById('poCompleteBanner').classList.add('hidden');
             document.getElementById('searchPOModal').value = '';
             document.getElementById('poItemsBody').innerHTML = '';
             document.getElementById('inputTglDatang').value = new Date().toISOString().split('T')[0];
@@ -1044,34 +1050,171 @@
 
         function closeInputModal() { document.getElementById('inputModal').classList.add('hidden'); }
 
-        function searchPO() {
-            const query = document.getElementById('searchPOModal').value.toUpperCase();
+        async function searchPO() {
+            const query = document.getElementById('searchPOModal').value.trim().toUpperCase();
             if (!query) return alert("Ketik No PO dulu!");
 
-            selectedPOItems = rawData.filter(row => String(row.noPO).toUpperCase() === query);
-            if (selectedPOItems.length === 0) {
-                alert("PO tidak ditemukan!");
-                return;
+            const btnCari = document.getElementById('btnCariPO');
+            btnCari.disabled = true;
+            btnCari.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i>`;
+
+            document.getElementById('poCompleteBanner').classList.add('hidden');
+            document.getElementById('poItemsContainer').classList.add('hidden');
+            document.getElementById('receiveInputContainer').classList.add('hidden');
+
+            try {
+                // Ambil riwayat barang yang sudah pernah diterima dari Sheet "Barang datang"
+                let receivedHistory = [];
+                try {
+                    const resBD = await fetch(`${API_URL}?sheet=barang_datang`);
+                    receivedHistory = await resBD.json();
+                } catch (e) {
+                    console.warn("Gagal memuat riwayat Barang datang:", e);
+                }
+
+                // Ambil semua item untuk PO yang dicari
+                const allPoItems = rawData.filter(row => String(row.noPO).trim().toUpperCase() === query);
+                if (allPoItems.length === 0) {
+                    alert("PO tidak ditemukan!");
+                    return;
+                }
+
+                selectedPOItems = [];
+                let hasIncompleteItems = false;
+
+                allPoItems.forEach(item => {
+                    const orderedQty = parseFloat(item.qty) || 0;
+                    const statusClass = classifyStatus(getStatusData(item));
+                    const isAlreadyClosedInPO = (statusClass === 'RECEIVED' || item.tglDatang === "SUDAH DATANG");
+
+                    // Hitung total qty yang sudah pernah dicatat di Sheet "Barang datang"
+                    const alreadyReceivedQty = Array.isArray(receivedHistory)
+                        ? receivedHistory
+                            .filter(bd => 
+                                String(bd.noPO).trim().toUpperCase() === query &&
+                                String(bd.item).trim().toUpperCase() === String(item.item).trim().toUpperCase() &&
+                                String(bd.ukuran || "-").trim().toUpperCase() === String(item.ukuran || "-").trim().toUpperCase()
+                            )
+                            .reduce((sum, bd) => sum + (parseFloat(bd.qty) || 0), 0)
+                        : 0;
+
+                    let remainingQty = isAlreadyClosedInPO ? 0 : Math.max(0, orderedQty - alreadyReceivedQty);
+                    let isComplete = (remainingQty <= 0);
+
+                    if (!isComplete) {
+                        hasIncompleteItems = true;
+                    }
+
+                    selectedPOItems.push({
+                        ...item,
+                        orderedQty: orderedQty,
+                        remainingQty: remainingQty,
+                        isComplete: isComplete
+                    });
+                });
+
+                const tbody = document.getElementById('poItemsBody');
+                tbody.innerHTML = '';
+
+                // Checkbox "Pilih Semua" hanya tampil jika masih ada item yang belum lengkap
+                const checkAllEl = document.getElementById('checkAll');
+                if (hasIncompleteItems) {
+                    checkAllEl.classList.remove('hidden');
+                    checkAllEl.checked = true;
+                } else {
+                    checkAllEl.classList.add('hidden');
+                    checkAllEl.checked = false;
+                }
+
+                selectedPOItems.forEach((item, index) => {
+                    let tr = document.createElement('tr');
+                    tr.className = item.isComplete ? "bg-emerald-50/40" : "hover:bg-slate-50 transition";
+
+                    if (item.isComplete) {
+                        // JIKA SUDAH LENGKAP: Tanpa ceklis & tanpa input qty, cukup note "Sudah Lengkap"
+                        tr.innerHTML = `
+                            <td class="py-3.5 px-4 text-center">
+                                <i class="fa-solid fa-circle-check text-emerald-500 text-base" title="Sudah Lengkap"></i>
+                            </td>
+                            <td class="py-3.5 px-4">
+                                <div class="font-semibold text-slate-600">${item.item}</div>
+                                <div class="text-xs text-slate-400">Ukuran: <span class="font-bold text-slate-500">${item.ukuran || '-'}</span></div>
+                            </td>
+                            <td class="py-3.5 px-4 text-center text-slate-500 font-medium">${item.orderedQty} Pcs</td>
+                            <td class="py-3.5 px-4 text-center">
+                                <span class="bg-slate-100 text-slate-500 px-2.5 py-1 rounded-md text-xs font-bold">0 Pcs</span>
+                            </td>
+                            <td class="py-3.5 px-4 text-center">
+                                <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold bg-emerald-100 text-emerald-700 border border-emerald-200">
+                                    <i class="fa-solid fa-check"></i> Sudah Lengkap
+                                </span>
+                            </td>
+                        `;
+                    } else {
+                        // JIKA MASIH ADA SISA: Tampilkan ceklis & kotak input jumlah PCS yang diterima
+                        tr.innerHTML = `
+                            <td class="py-3.5 px-4 text-center">
+                                <input type="checkbox" class="item-checkbox w-4 h-4 accent-indigo-600 cursor-pointer" data-index="${index}" checked onchange="toggleQtyInput(${index}, this.checked)">
+                            </td>
+                            <td class="py-3.5 px-4">
+                                <div class="font-semibold text-slate-800">${item.item}</div>
+                                <div class="text-xs text-slate-500">Ukuran: <span class="font-bold text-slate-700">${item.ukuran || '-'}</span></div>
+                            </td>
+                            <td class="py-3.5 px-4 text-center text-slate-500 font-medium">${item.orderedQty} Pcs</td>
+                            <td class="py-3.5 px-4 text-center">
+                                <span class="bg-amber-100 text-amber-800 px-2.5 py-1 rounded-md text-xs font-bold">${item.remainingQty} Pcs</span>
+                            </td>
+                            <td class="py-3.5 px-4 text-center">
+                                <div class="flex items-center justify-center gap-1.5">
+                                    <input type="number" id="qtyInput_${index}" value="${item.remainingQty}" min="1" max="${item.remainingQty}" 
+                                        oninput="validateQtyInput(this, ${item.remainingQty})"
+                                        class="w-20 p-2 text-center font-bold text-indigo-700 bg-indigo-50/50 border border-indigo-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm">
+                                    <span class="text-xs text-slate-500 font-semibold">Pcs</span>
+                                </div>
+                            </td>
+                        `;
+                    }
+                    tbody.appendChild(tr);
+                });
+
+                document.getElementById('poItemsContainer').classList.remove('hidden');
+
+                if (hasIncompleteItems) {
+                    document.getElementById('receiveInputContainer').classList.remove('hidden');
+                } else {
+                    // Semua item sudah lengkap -> tampilkan banner info & sembunyikan form simpan
+                    document.getElementById('poCompleteBanner').classList.remove('hidden');
+                    document.getElementById('receiveInputContainer').classList.add('hidden');
+                }
+
+            } finally {
+                btnCari.disabled = false;
+                btnCari.innerHTML = `Cari`;
             }
+        }
 
-            const tbody = document.getElementById('poItemsBody');
-            tbody.innerHTML = '';
-            selectedPOItems.forEach((item, index) => {
-                let tr = document.createElement('tr');
-                tr.innerHTML = `
-                    <td class="py-3 px-4 text-center"><input type="checkbox" class="item-checkbox" data-index="${index}" checked></td>
-                    <td class="py-3 px-4 font-semibold text-slate-700">${item.item}</td>
-                    <td class="py-3 px-4">${item.qty} ${item.ukuran}</td>
-                `;
-                tbody.appendChild(tr);
-            });
+        function toggleQtyInput(index, isChecked) {
+            const inputEl = document.getElementById(`qtyInput_${index}`);
+            if (inputEl) {
+                inputEl.disabled = !isChecked;
+                inputEl.classList.toggle('opacity-40', !isChecked);
+            }
+        }
 
-            document.getElementById('poItemsContainer').classList.remove('hidden');
-            document.getElementById('receiveInputContainer').classList.remove('hidden');
+        function validateQtyInput(inputEl, maxQty) {
+            let val = parseFloat(inputEl.value);
+            if (val > maxQty) {
+                inputEl.value = maxQty;
+            } else if (val < 1 && inputEl.value !== "") {
+                inputEl.value = 1;
+            }
         }
 
         function toggleAll(source) {
-            document.querySelectorAll('.item-checkbox').forEach(cb => cb.checked = source.checked);
+            document.querySelectorAll('.item-checkbox').forEach(cb => {
+                cb.checked = source.checked;
+                toggleQtyInput(cb.getAttribute('data-index'), source.checked);
+            });
         }
 
         function simpanBarangDatang() {
@@ -1079,25 +1222,68 @@
             if (!tglDatang) return alert("Pilih Tanggal Datang!");
 
             const checkboxes = document.querySelectorAll('.item-checkbox:checked');
-            if (checkboxes.length === 0) return alert("Pilih minimal 1 item!");
+            if (checkboxes.length === 0) return alert("Pilih minimal 1 item yang belum lengkap!");
 
             let itemsToSave = [];
+            let hasInvalidQty = false;
+
             checkboxes.forEach(cb => {
-                const item = selectedPOItems[cb.getAttribute('data-index')];
+                const index = cb.getAttribute('data-index');
+                const item = selectedPOItems[index];
+                if (item.isComplete) return;
+
+                const inputQty = parseFloat(document.getElementById(`qtyInput_${index}`).value) || 0;
+                if (inputQty <= 0 || inputQty > item.remainingQty) {
+                    hasInvalidQty = true;
+                    return;
+                }
+
                 itemsToSave.push({
-                    noPR: item.noPR, noPO: item.noPO, user: item.user, vendor: item.vendor,
-                    item: item.item, ukuran: item.ukuran, qty: item.qty,
-                    tglDatang: tglDatang, tglKirim: item.tglKirim || "-", noDO: item.noDO || "-", noReceive: "-"
+                    noPR: item.noPR, 
+                    noPO: item.noPO, 
+                    user: item.user, 
+                    vendor: item.vendor,
+                    item: item.item, 
+                    ukuran: item.ukuran, 
+                    qty: inputQty,
+                    tglDatang: tglDatang, 
+                    tglKirim: item.tglKirim || "-", 
+                    noDO: item.noDO || "-", 
+                    noReceive: "-"
                 });
             });
 
-            fetch(API_URL, { method: 'POST', body: JSON.stringify(itemsToSave) }).then(() => {
-                alert("Berhasil disimpan!");
-                closeInputModal();
-                fetchSheetData();
-            });
+            if (hasInvalidQty) {
+                return alert("Jumlah Qty Diterima tidak valid (minimal 1 dan tidak boleh melebihi Sisa)!");
+            }
+
+            if (itemsToSave.length === 0) {
+                return alert("Tidak ada item yang perlu disimpan.");
+            }
+
+            const btnSimpan = document.getElementById('btnSimpan');
+            btnSimpan.disabled = true;
+            btnSimpan.innerHTML = `<i class="fa-solid fa-spinner fa-spin mr-2"></i>Menyimpan...`;
+
+            fetch(API_URL, { method: 'POST', body: JSON.stringify(itemsToSave) })
+                .then(() => {
+                    alert("Berhasil disimpan!");
+                    closeInputModal();
+                    fetchSheetData();
+                })
+                .catch(err => {
+                    console.error(err);
+                    alert("Gagal menyimpan data.");
+                })
+                .finally(() => {
+                    btnSimpan.disabled = false;
+                    btnSimpan.innerHTML = `<i class="fa-solid fa-save mr-2"></i>Simpan ke Sheet Barang Datang`;
+                });
         }
 
+        // ========================================================
+        // FETCH & RENDER DATA UTAMA
+        // ========================================================
         async function fetchSheetData() {
             document.getElementById('syncIcon')?.classList.add('fa-spin');
             try {
