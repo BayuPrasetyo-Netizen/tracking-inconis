@@ -69,16 +69,62 @@
         <h2 class="text-xl font-bold text-slate-800 mb-1">Mengambil Data...</h2>
     </div>
 
-    <!-- LOGIN MODAL -->
+    <!-- LOGIN & REQUEST AKUN MODAL -->
     <div id="loginModal" class="fixed inset-0 bg-slate-900/80 backdrop-blur-sm z-[100] hidden flex items-center justify-center p-4">
-        <div class="bg-white p-8 rounded-2xl shadow-2xl max-w-sm w-full text-center">
-            <i class="fa-solid fa-lock text-4xl text-indigo-600 mb-4"></i>
-            <h2 class="text-2xl font-bold mb-2">Admin Login</h2>
-            <p class="text-sm text-slate-500 mb-6">Masukkan PIN untuk akses menu</p>
-            <input type="password" id="pinInput" onkeypress="handleEnter(event, 'login')" placeholder="Masukkan PIN" class="w-full text-center tracking-widest text-lg p-3 border border-slate-300 rounded-xl mb-4 focus:outline-none focus:ring-2 focus:ring-indigo-500">
-            <div class="flex gap-2">
-                <button onclick="document.getElementById('loginModal').classList.add('hidden')" class="flex-1 bg-slate-200 text-slate-700 py-3 rounded-xl font-bold hover:bg-slate-300 transition">Batal</button>
-                <button onclick="login()" class="flex-1 bg-indigo-600 text-white py-3 rounded-xl font-bold hover:bg-indigo-700 transition">Masuk</button>
+        <div class="bg-white p-6 sm:p-8 rounded-2xl shadow-2xl max-w-sm w-full">
+            <div class="text-center mb-5">
+                <i class="fa-solid fa-user-shield text-4xl text-indigo-600 mb-3"></i>
+                <h2 class="text-xl font-bold text-slate-800" id="authModalTitle">Masuk Akun</h2>
+                <p class="text-xs text-slate-500 mt-1" id="authModalSubtitle">Login dengan akun terdaftar atau ajukan akun baru</p>
+            </div>
+
+            <!-- Tab Switcher -->
+            <div class="grid grid-cols-2 gap-1.5 bg-slate-100 p-1 rounded-xl mb-5 text-xs font-bold">
+                <button type="button" id="tabLoginBtn" onclick="switchAuthTab('login')" class="py-2 rounded-lg bg-white text-indigo-600 shadow-sm transition">Masuk</button>
+                <button type="button" id="tabRegisterBtn" onclick="switchAuthTab('register')" class="py-2 rounded-lg text-slate-500 hover:text-slate-800 transition">Daftar Akun</button>
+            </div>
+
+            <!-- FORM LOGIN -->
+            <div id="loginFormBox" class="space-y-3">
+                <div>
+                    <label class="block text-[11px] font-bold text-slate-500 uppercase mb-1">Username / PIN Admin</label>
+                    <input type="text" id="loginUsername" onkeypress="handleEnter(event, 'login')" placeholder="Username atau PIN (12345)" class="w-full p-3 border border-slate-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                </div>
+                <div>
+                    <label class="block text-[11px] font-bold text-slate-500 uppercase mb-1">Password</label>
+                    <input type="password" id="pinInput" onkeypress="handleEnter(event, 'login')" placeholder="Password (kosongkan jika pakai PIN)" class="w-full p-3 border border-slate-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                </div>
+                <div class="flex gap-2 pt-2">
+                    <button type="button" onclick="closeAuthModal()" class="flex-1 bg-slate-200 text-slate-700 py-3 rounded-xl font-bold text-sm hover:bg-slate-300 transition">Batal</button>
+                    <button type="button" onclick="login()" id="btnLoginSubmit" class="flex-1 bg-indigo-600 text-white py-3 rounded-xl font-bold text-sm hover:bg-indigo-700 transition">Masuk</button>
+                </div>
+            </div>
+
+            <!-- FORM DAFTAR / REQUEST AKUN (STATUS PENDING MENUNGGU APPROVAL ADMIN) -->
+            <div id="registerFormBox" class="space-y-3 hidden">
+                <div>
+                    <label class="block text-[11px] font-bold text-slate-500 uppercase mb-1">Nama Lengkap</label>
+                    <input type="text" id="regNama" placeholder="Contoh: Budi Santoso" class="w-full p-2.5 border border-slate-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                </div>
+                <div>
+                    <label class="block text-[11px] font-bold text-slate-500 uppercase mb-1">Username</label>
+                    <input type="text" id="regUsername" placeholder="Contoh: budi.purchasing" class="w-full p-2.5 border border-slate-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                </div>
+                <div>
+                    <label class="block text-[11px] font-bold text-slate-500 uppercase mb-1">Divisi / Bagian</label>
+                    <input type="text" id="regDivisi" placeholder="Contoh: Purchasing / Gudang / Audit" class="w-full p-2.5 border border-slate-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                </div>
+                <div>
+                    <label class="block text-[11px] font-bold text-slate-500 uppercase mb-1">Password</label>
+                    <input type="password" id="regPassword" onkeypress="handleEnter(event, 'registerAccount')" placeholder="Minimal 4 karakter" class="w-full p-2.5 border border-slate-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                </div>
+                <p class="text-[11px] text-amber-700 bg-amber-50 border border-amber-200 rounded-lg p-2.5">
+                    <i class="fa-solid fa-circle-info mr-1"></i> Akun baru akan masuk dengan status <b>PENDING</b> dan aktif setelah disetujui Admin.
+                </p>
+                <div class="flex gap-2 pt-1">
+                    <button type="button" onclick="closeAuthModal()" class="flex-1 bg-slate-200 text-slate-700 py-3 rounded-xl font-bold text-sm hover:bg-slate-300 transition">Batal</button>
+                    <button type="button" onclick="registerAccount()" id="btnRegisterSubmit" class="flex-1 bg-emerald-600 text-white py-3 rounded-xl font-bold text-sm hover:bg-emerald-700 transition">Kirim Request</button>
+                </div>
             </div>
         </div>
     </div>
@@ -151,9 +197,9 @@
                             <span>Sinkronisasi</span>
                         </button>
 
-                        <button onclick="document.getElementById('loginModal').classList.remove('hidden')" class="flex items-center space-x-1.5 sm:space-x-2 bg-slate-800 hover:bg-slate-700 text-white px-3 sm:px-4 py-2 rounded-xl text-xs sm:text-sm font-medium transition border border-slate-700 shadow-sm active:scale-95">
+                        <button onclick="openAuthModal('login')" id="authBtn" class="flex items-center space-x-1.5 sm:space-x-2 bg-slate-800 hover:bg-slate-700 text-white px-3 sm:px-4 py-2 rounded-xl text-xs sm:text-sm font-medium transition border border-slate-700 shadow-sm active:scale-95">
                             <i class="fa-solid fa-user-shield text-indigo-400"></i>
-                            <span>Admin</span>
+                            <span id="authBtnText">Akun / Admin</span>
                         </button>
 
                         <button onclick="logout()" id="logoutBtn" class="hidden bg-red-500 hover:bg-red-600 text-white px-3 sm:px-4 py-2 rounded-xl text-xs sm:text-sm font-medium transition items-center gap-1.5">
@@ -197,9 +243,9 @@
                             <div class="relative w-44 h-44 flex items-center justify-center my-2">
                                 <svg class="w-full h-full transform -rotate-90" viewBox="0 0 36 36">
                                     <path class="text-slate-100" stroke-width="4" stroke="currentColor" fill="none" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"></path>
-                                    <path id="donutPending" class="text-amber-500 transition-all duration-1000" stroke-dasharray="0, 100" stroke-width="4" stroke-linecap="round" stroke="currentColor" fill="none" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"></path>
-                                    <path id="donutProgress" class="text-blue-500 transition-all duration-1000" stroke-dasharray="0, 100" stroke-width="4" stroke-linecap="round" stroke="currentColor" fill="none" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"></path>
-                                    <path id="donutReceived" class="text-emerald-500 transition-all duration-1000" stroke-dasharray="0, 100" stroke-width="4" stroke-linecap="round" stroke="currentColor" fill="none" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"></path>
+                                    <path id="donutPending" class="text-amber-500 transition-all duration-1000" stroke-dasharray="0, 100" stroke-width="4" stroke-linecap="round" stroke-currentColor" fill="none" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"></path>
+                                    <path id="donutProgress" class="text-blue-500 transition-all duration-1000" stroke-dasharray="0, 100" stroke-width="4" stroke-linecap="round" stroke-currentColor" fill="none" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"></path>
+                                    <path id="donutReceived" class="text-emerald-500 transition-all duration-1000" stroke-dasharray="0, 100" stroke-width="4" stroke-linecap="round" stroke-currentColor" fill="none" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"></path>
                                 </svg>
                                 <div class="absolute flex flex-col items-center">
                                     <span class="text-2xl font-extrabold text-slate-800" id="donutTotalPO">0</span>
@@ -620,6 +666,7 @@
         let currentPage = 1;
         let rowsPerPage = 100;
         let isLoggedIn = false;
+        let currentUser = null;
         let activeUploadPO = "";
 
         // --- FITUR EXPORT EXCEL (MENDETAIL PER ITEM) ---
@@ -843,49 +890,182 @@
             }
         }
 
+        // ========================================================
+        // SISTEM AKUN (REQUEST AKUN PENDING & LOGIN MULTI-USER)
+        // ========================================================
         let clickCount = 0;
         let clickTimeout;
         function handleLogoClick() {
             clickCount++;
             clearTimeout(clickTimeout);
             if (clickCount === 3) {
-                document.getElementById('loginModal').classList.remove('hidden');
-                document.getElementById('pinInput').value = ''; 
+                openAuthModal('login');
                 clickCount = 0;
             } else {
                 clickTimeout = setTimeout(() => { clickCount = 0; }, 1000);
             }
         }
 
-        function login() {
-            const pin = document.getElementById('pinInput').value;
-            if (pin === '12345') {
-                isLoggedIn = true;
-                document.getElementById('loginModal').classList.add('hidden');
-                document.getElementById('adminMenu').classList.remove('hidden');
-                document.getElementById('logoutBtn').classList.remove('hidden');
-                document.getElementById('logoutBtn').classList.add('flex');
-                
-                document.getElementById('billingStatCard').classList.remove('hidden');
-                document.getElementById('statsGrid').className = "grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 sm:gap-4 transition-all";
-                document.querySelectorAll('.billing-option').forEach(el => el.classList.remove('hidden'));
-                
-                if (!document.getElementById('viewPembayaran').classList.contains('hidden')) {
-                    loadPembayaranData();
-                }
-                
-                alert('Berhasil Login sebagai Admin!');
-                renderTable(); 
+        function openAuthModal(tab = 'login') {
+            document.getElementById('loginModal').classList.remove('hidden');
+            switchAuthTab(tab);
+        }
+
+        function closeAuthModal() {
+            document.getElementById('loginModal').classList.add('hidden');
+        }
+
+        function switchAuthTab(tab) {
+            const tabLoginBtn = document.getElementById('tabLoginBtn');
+            const tabRegisterBtn = document.getElementById('tabRegisterBtn');
+            const loginFormBox = document.getElementById('loginFormBox');
+            const registerFormBox = document.getElementById('registerFormBox');
+            const titleEl = document.getElementById('authModalTitle');
+            const subEl = document.getElementById('authModalSubtitle');
+
+            if (tab === 'register') {
+                tabRegisterBtn.className = "py-2 rounded-lg bg-white text-emerald-600 shadow-sm transition";
+                tabLoginBtn.className = "py-2 rounded-lg text-slate-500 hover:text-slate-800 transition";
+                loginFormBox.classList.add('hidden');
+                registerFormBox.classList.remove('hidden');
+                titleEl.innerText = "Daftar / Request Akun";
+                subEl.innerText = "Akun baru perlu persetujuan Admin sebelum aktif";
             } else {
-                alert('PIN Salah!');
+                tabLoginBtn.className = "py-2 rounded-lg bg-white text-indigo-600 shadow-sm transition";
+                tabRegisterBtn.className = "py-2 rounded-lg text-slate-500 hover:text-slate-800 transition";
+                registerFormBox.classList.add('hidden');
+                loginFormBox.classList.remove('hidden');
+                titleEl.innerText = "Masuk Akun";
+                subEl.innerText = "Login dengan akun terdaftar atau PIN Admin";
+            }
+        }
+
+        async function registerAccount() {
+            const nama = document.getElementById('regNama').value.trim();
+            const username = document.getElementById('regUsername').value.trim().toLowerCase();
+            const divisi = document.getElementById('regDivisi').value.trim();
+            const password = document.getElementById('regPassword').value.trim();
+
+            if (!nama || !username || !password) {
+                return alert("Nama lengkap, username, dan password wajib diisi!");
+            }
+            if (password.length < 4) {
+                return alert("Password minimal 4 karakter!");
+            }
+
+            const btn = document.getElementById('btnRegisterSubmit');
+            btn.disabled = true;
+            btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin mr-1"></i> Mengirim...`;
+
+            try {
+                const res = await fetch(API_URL, {
+                    method: 'POST',
+                    body: JSON.stringify({
+                        action: "register",
+                        nama: nama,
+                        username: username,
+                        divisi: divisi,
+                        password: password
+                    })
+                });
+                const result = await res.json();
+                alert(result.message || "Request akun terkirim.");
+                if (result.success) {
+                    document.getElementById('regNama').value = '';
+                    document.getElementById('regUsername').value = '';
+                    document.getElementById('regDivisi').value = '';
+                    document.getElementById('regPassword').value = '';
+                    switchAuthTab('login');
+                }
+            } catch (err) {
+                console.error(err);
+                alert("Gagal mengirim pendaftaran akun.");
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = `Kirim Request`;
+            }
+        }
+
+        function applyLoggedInUI(userObj) {
+            isLoggedIn = true;
+            currentUser = userObj;
+
+            closeAuthModal();
+            document.getElementById('logoutBtn').classList.remove('hidden');
+            document.getElementById('logoutBtn').classList.add('flex');
+            document.getElementById('authBtnText').innerText = `${userObj.nama} (${userObj.role})`;
+
+            const isAdmin = (String(userObj.role).toUpperCase() === 'ADMIN');
+            if (isAdmin) {
+                document.getElementById('adminMenu').classList.remove('hidden');
+            } else {
+                document.getElementById('adminMenu').classList.add('hidden');
+            }
+
+            document.getElementById('billingStatCard').classList.remove('hidden');
+            document.getElementById('statsGrid').className = "grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 sm:gap-4 transition-all";
+            document.querySelectorAll('.billing-option').forEach(el => el.classList.remove('hidden'));
+
+            if (!document.getElementById('viewPembayaran').classList.contains('hidden')) {
+                loadPembayaranData();
+            }
+
+            renderTable();
+        }
+
+        async function login() {
+            const inputUser = document.getElementById('loginUsername').value.trim();
+            const inputPass = document.getElementById('pinInput').value.trim();
+
+            // Fallback PIN Admin lama
+            if ((inputUser === '12345' && !inputPass) || (inputPass === '12345' && !inputUser)) {
+                applyLoggedInUI({ nama: 'Admin', username: 'admin', role: 'ADMIN' });
+                alert('Berhasil Login sebagai Admin!');
+                return;
+            }
+
+            if (!inputUser || !inputPass) {
+                return alert("Masukkan Username dan Password!");
+            }
+
+            const btn = document.getElementById('btnLoginSubmit');
+            btn.disabled = true;
+            btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin mr-1"></i> Masuk...`;
+
+            try {
+                const res = await fetch(API_URL, {
+                    method: 'POST',
+                    body: JSON.stringify({
+                        action: "login",
+                        username: inputUser,
+                        password: inputPass
+                    })
+                });
+                const result = await res.json();
+                if (result.success && result.user) {
+                    document.getElementById('loginUsername').value = '';
+                    document.getElementById('pinInput').value = '';
+                    applyLoggedInUI(result.user);
+                    alert(`Selamat datang, ${result.user.nama}!`);
+                } else {
+                    alert(result.message || "Gagal login.");
+                }
+            } catch (err) {
+                console.error(err);
+                alert("Terjadi kesalahan saat login.");
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = `Masuk`;
             }
         }
 
         function logout() {
             isLoggedIn = false;
+            currentUser = null;
             document.getElementById('adminMenu').classList.add('hidden');
             document.getElementById('logoutBtn').classList.add('hidden');
             document.getElementById('logoutBtn').classList.remove('flex');
+            document.getElementById('authBtnText').innerText = "Akun / Admin";
             
             document.getElementById('billingStatCard').classList.add('hidden');
             document.getElementById('statsGrid').className = "grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4 transition-all";
@@ -901,8 +1081,8 @@
         }
 
         function openUploadModal(poNumber) {
-            if (!isLoggedIn) {
-                document.getElementById('loginModal').classList.remove('hidden');
+            if (!isLoggedIn || String(currentUser?.role).toUpperCase() !== 'ADMIN') {
+                openAuthModal('login');
                 return;
             }
             activeUploadPO = poNumber;
@@ -1063,7 +1243,6 @@
             document.getElementById('receiveInputContainer').classList.add('hidden');
 
             try {
-                // Ambil riwayat barang yang sudah pernah diterima dari Sheet "Barang datang"
                 let receivedHistory = [];
                 try {
                     const resBD = await fetch(`${API_URL}?sheet=barang_datang`);
@@ -1072,7 +1251,6 @@
                     console.warn("Gagal memuat riwayat Barang datang:", e);
                 }
 
-                // Ambil semua item untuk PO yang dicari
                 const allPoItems = rawData.filter(row => String(row.noPO).trim().toUpperCase() === query);
                 if (allPoItems.length === 0) {
                     alert("PO tidak ditemukan!");
@@ -1087,7 +1265,6 @@
                     const statusClass = classifyStatus(getStatusData(item));
                     const isAlreadyClosedInPO = (statusClass === 'RECEIVED' || item.tglDatang === "SUDAH DATANG");
 
-                    // Hitung total qty yang sudah pernah dicatat di Sheet "Barang datang"
                     const alreadyReceivedQty = Array.isArray(receivedHistory)
                         ? receivedHistory
                             .filter(bd => 
@@ -1116,7 +1293,6 @@
                 const tbody = document.getElementById('poItemsBody');
                 tbody.innerHTML = '';
 
-                // Checkbox "Pilih Semua" hanya tampil jika masih ada item yang belum lengkap
                 const checkAllEl = document.getElementById('checkAll');
                 if (hasIncompleteItems) {
                     checkAllEl.classList.remove('hidden');
@@ -1131,7 +1307,6 @@
                     tr.className = item.isComplete ? "bg-emerald-50/40" : "hover:bg-slate-50 transition";
 
                     if (item.isComplete) {
-                        // JIKA SUDAH LENGKAP: Tanpa ceklis & tanpa input qty, cukup note "Sudah Lengkap"
                         tr.innerHTML = `
                             <td class="py-3.5 px-4 text-center">
                                 <i class="fa-solid fa-circle-check text-emerald-500 text-base" title="Sudah Lengkap"></i>
@@ -1151,7 +1326,6 @@
                             </td>
                         `;
                     } else {
-                        // JIKA MASIH ADA SISA: Tampilkan ceklis & kotak input jumlah PCS yang diterima
                         tr.innerHTML = `
                             <td class="py-3.5 px-4 text-center">
                                 <input type="checkbox" class="item-checkbox w-4 h-4 accent-indigo-600 cursor-pointer" data-index="${index}" checked onchange="toggleQtyInput(${index}, this.checked)">
@@ -1182,7 +1356,6 @@
                 if (hasIncompleteItems) {
                     document.getElementById('receiveInputContainer').classList.remove('hidden');
                 } else {
-                    // Semua item sudah lengkap -> tampilkan banner info & sembunyikan form simpan
                     document.getElementById('poCompleteBanner').classList.remove('hidden');
                     document.getElementById('receiveInputContainer').classList.add('hidden');
                 }
@@ -1513,6 +1686,8 @@
             const endIndex = Math.min(startIndex + rowsPerPage, totalData);
             const paginatedKeys = filteredKeys.slice(startIndex, endIndex);
 
+            const isAdmin = isLoggedIn && String(currentUser?.role).toUpperCase() === 'ADMIN';
+
             paginatedKeys.forEach((key, index) => {
                 let group = groupedData[key];
                 let itemCount = group.items.length;
@@ -1538,7 +1713,7 @@
                     badgeHTMLMobile = `<span class="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-amber-100 text-amber-700">Pending</span>`;
                 }
 
-                let uploadBtnHTML = isLoggedIn ? 
+                let uploadBtnHTML = isAdmin ? 
                     `<button onclick="openUploadModal('${key.replace(/'/g, "\\'")}')" title="Upload DO / Invoice" class="bg-indigo-50 hover:bg-indigo-600 text-indigo-600 hover:text-white w-8 h-8 rounded-lg text-xs font-bold transition flex items-center justify-center shadow-sm"><i class="fa-regular fa-file-lines"></i></button>` : '';
 
                 let viewBtnHTML = '';
@@ -1595,7 +1770,7 @@
                             <p class="text-xs text-slate-600">${displayDate}</p>
                         </div>
                         <div class="flex items-center gap-2">
-                            ${isLoggedIn ? `<button onclick="openUploadModal('${key.replace(/'/g, "\\'")}')" class="bg-indigo-50 hover:bg-indigo-100 text-indigo-600 px-2.5 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1"><i class="fa-regular fa-file-lines"></i> Upload</button>` : ''}
+                            ${isAdmin ? `<button onclick="openUploadModal('${key.replace(/'/g, "\\'")}')" class="bg-indigo-50 hover:bg-indigo-100 text-indigo-600 px-2.5 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1"><i class="fa-regular fa-file-lines"></i> Upload</button>` : ''}
                             ${hasLink ? `<button onclick="openViewDocModal('${key.replace(/'/g, "\\'")}')" class="bg-emerald-50 hover:bg-emerald-100 text-emerald-600 px-2.5 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1"><i class="fa-solid fa-eye"></i> Dokumen</button>` : ''}
                             <button onclick="openDetailModal('${key.replace(/'/g, "\\'")}')" class="bg-indigo-50 hover:bg-indigo-100 text-indigo-600 px-3 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1">
                                 <i class="fa-solid fa-receipt"></i> Detail
